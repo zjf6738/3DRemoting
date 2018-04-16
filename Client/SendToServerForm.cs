@@ -2,23 +2,23 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
-
 using Wayfarer.BroadCast.Common;
-using Wayfarer.BroadCast.RemoteObject;
+
+//using Wayfarer.BroadCast.Common;
+//using Wayfarer.BroadCast.RemoteObject;
 
 namespace Wayfarer.BroadCast.Server
 {
 	/// <summary>
-	/// BroadCastForm 的摘要说明。
+	/// SendToServerForm 的摘要说明。
 	/// </summary>
-	public class BroadCastForm : System.Windows.Forms.Form
+	public class SendToServerForm : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.Button btnSend;
 		private System.Windows.Forms.TextBox txtInfo;
@@ -29,13 +29,15 @@ namespace Wayfarer.BroadCast.Server
 		/// </summary>
 		private System.ComponentModel.Container components = null;	
 
-		#region 客户端订阅客户端事件
+		#region 服务端订阅客户端事件
 
+	    private IUpCast upCast = null;
 //		private IBroadCast bc = null;
+	    private HttpChannel channel = null;
 
 		#endregion
 
-		public BroadCastForm()
+		public SendToServerForm()
 		{
 			//
 			// Windows 窗体设计器支持所必需的
@@ -97,7 +99,7 @@ namespace Wayfarer.BroadCast.Server
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(100, 23);
             this.label1.TabIndex = 4;
-            this.label1.Text = "广播信息：";
+            this.label1.Text = "发送信息：";
             // 
             // btnClose
             // 
@@ -108,7 +110,7 @@ namespace Wayfarer.BroadCast.Server
             this.btnClose.Text = "&Close";
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
-            // BroadCastForm
+            // SendToServerForm
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
             this.ClientSize = new System.Drawing.Size(312, 149);
@@ -116,9 +118,9 @@ namespace Wayfarer.BroadCast.Server
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnSend);
             this.Controls.Add(this.txtInfo);
-            this.Name = "BroadCastForm";
+            this.Name = "SendToServerForm";
             this.Text = "SendToServerForm";
-            this.Load += new System.EventHandler(this.BroadCastForm_Load);
+            this.Load += new System.EventHandler(this.SendToServerForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -126,32 +128,26 @@ namespace Wayfarer.BroadCast.Server
 		#endregion
 
 		private void btnClose_Click(object sender, System.EventArgs e)
-		{	
-			#region 客户端订阅客户端事件
+		{
 
-            foreach (IChannel channel in ChannelServices.RegisteredChannels)
-            {
-                ChannelServices.UnregisterChannel(channel);
-            }
+		    if (channel != null)
+		    {
+		        ChannelServices.UnregisterChannel(channel);
+		    }
 
-			#endregion
 			this.Close();
 		}
 
 		private void btnSend_Click(object sender, System.EventArgs e)
 		{
 			if (txtInfo.Text != string.Empty)
-			{ 					
-				#region 客户端订阅服务端事件
+            {
+                #region 服务端订阅客户端事件
 
-				ServerForm.Obj.BroadCastingInfo("send time--"+DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")+"--:   "+txtInfo.Text);
-				#endregion
+                // ServerForm.Obj.BroadCastingInfo(txtInfo.Text);
+                upCast.SendMsg("client send time--"+DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")+"--:"+txtInfo.Text);
 
-				#region 客户端订阅客户端事件
-
-				//				bc.BroadCastingInfo(txtInfo.Text);
-
-				#endregion				
+				#endregion			
 			}
 			else
 			{
@@ -159,22 +155,29 @@ namespace Wayfarer.BroadCast.Server
 			}
 		}
 
-		private void BroadCastForm_Load(object sender, System.EventArgs e)
+        private void SendToServerForm_Load(object sender, System.EventArgs e)
 		{
 			#region 客户端订阅客户端事件
 
-//			BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
-//			BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
-//			serverProvider.TypeFilterLevel = TypeFilterLevel.Full;
+            BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
+            BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
+            serverProvider.TypeFilterLevel = TypeFilterLevel.Full;
 //			
-//			IDictionary props = new Hashtable();
-//			props["port"] = 0;
-//			props["name"] = "ClientHttp";
-//			HttpChannel channel = new HttpChannel(props,clientProvider,serverProvider);
-//			ChannelServices.RegisterChannel(channel);
+            IDictionary props = new Hashtable();
+            props["port"] = 0;
+            props["name"] = "ClientHttp";
+            channel = new HttpChannel(props, clientProvider, serverProvider);
+            ChannelServices.RegisterChannel(channel);
 //			
 //			bc = (IBroadCast)Activator.GetObject(
 //				typeof(IBroadCast),"http://localhost:8080/BroadCastMessage.soap");
+
+            //HttpChannel channel = new HttpChannel(1);
+            //ChannelServices.RegisterChannel(channel);
+
+            upCast = (IUpCast)Activator.GetObject(typeof(IUpCast),
+                "http://localhost:8080/UpCastMessage.soap");
+
 
 			#endregion
 		

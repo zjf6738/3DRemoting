@@ -90,6 +90,7 @@
     <Compile Include="IBroadCast.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IUpCast.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
