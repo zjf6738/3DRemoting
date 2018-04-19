@@ -10,10 +10,10 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
 
-using Wayfarer.BroadCast.Common;
-using Wayfarer.BroadCast.RemoteObject;
+using Qzeim.ThrdPrint.BroadCast.Common;
+using Qzeim.ThrdPrint.BroadCast.RemoteObject;
 
-namespace Wayfarer.BroadCast.Server
+namespace Qzeim.ThrdPrint.BroadCast.Server
 {
 	/// <summary>
 	/// BroadCastForm 的摘要说明。

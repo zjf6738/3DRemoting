@@ -9,14 +9,14 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon />
     <AssemblyKeyContainerName />
-    <AssemblyName>Wayfarer.BroadCast.RemoteObject</AssemblyName>
+    <AssemblyName>Qzeim.ThrdPrint.BroadCast.RemoteObject</AssemblyName>
     <AssemblyOriginatorKeyFile />
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
-    <RootNamespace>Wayfarer.BroadCast.RemoteObject</RootNamespace>
+    <RootNamespace>Qzeim.ThrdPrint.BroadCast.RemoteObject</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <StartupObject />
     <FileUpgradeFlags>
@@ -67,6 +67,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Qzeim.ThrdPrint.BroadCast.Common">
+      <HintPath>..\Common\bin\Debug\Qzeim.ThrdPrint.BroadCast.Common.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -78,10 +81,6 @@
     </Reference>
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
-    </Reference>
-    <Reference Include="Wayfarer.BroadCast.Common">
-      <Name>Wayfarer.BroadCast.Common</Name>
-      <HintPath>..\Common\bin\Debug\Wayfarer.BroadCast.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

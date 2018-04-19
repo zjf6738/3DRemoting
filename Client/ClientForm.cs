@@ -5,16 +5,18 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using System.Configuration;
 
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
+using System.Runtime.Remoting.Channels.Tcp;
 using System.Threading;
-using Wayfarer.BroadCast.Common;
-using Wayfarer.BroadCast.Server;
+using Qzeim.ThrdPrint.BroadCast.Common;
+using Qzeim.ThrdPrint.BroadCast.Server;
 
-namespace Wayfarer.BroadCast.Client
+namespace Qzeim.ThrdPrint.BroadCast.Client
 {
 	/// <summary>
 	/// Form1 的摘要说明。
@@ -111,6 +113,7 @@ namespace Wayfarer.BroadCast.Client
             this.txtMessage.Location = new System.Drawing.Point(32, 40);
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
+            this.txtMessage.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtMessage.Size = new System.Drawing.Size(272, 184);
             this.txtMessage.TabIndex = 5;
             // 
@@ -163,17 +166,24 @@ namespace Wayfarer.BroadCast.Client
 
 		private void ClientForm_Load(object sender, System.EventArgs e)
 		{
-			BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
-			BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
-			serverProvider.TypeFilterLevel = TypeFilterLevel.Full;
+            BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
+            BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
+            serverProvider.TypeFilterLevel = TypeFilterLevel.Full;
 
-			IDictionary props = new Hashtable();
-			props["port"] = 0;
-			HttpChannel channel = new HttpChannel(props,clientProvider,serverProvider);
-			ChannelServices.RegisterChannel(channel);
+            IDictionary props = new Hashtable();
+            props["port"] = 0;
+            TcpChannel channel = new TcpChannel(props, clientProvider, serverProvider);
+            ChannelServices.RegisterChannel(channel);
 
-			watch = (IBroadCast)Activator.GetObject(
-				typeof(IBroadCast),"http://localhost:8080/BroadCastMessage.soap");
+            //// 配置通道及传输格式
+            //string cfg = "Client.config";
+            //RemotingConfiguration.Configure(cfg);
+
+            // 由config中读取相关数据
+            string broadCastObjURL = ConfigurationManager.AppSettings["BroadCastObjURL"];
+
+            // 获取广播远程对象
+            watch = (IBroadCast)Activator.GetObject(typeof(IBroadCast), broadCastObjURL);
 
 			wrapper = new EventWrapper();	
 			wrapper.LocalBroadCastEvent += new BroadCastEventHandler(BroadCastingMessage);
@@ -188,8 +198,18 @@ namespace Wayfarer.BroadCast.Client
 
 		public void BroadCastingMessage(string message)
 		{
-		    rcvMsg = message;
-		    rcvMsg += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "--:   ";
+		    CommObj commObj = CommObj.FromJson(message);
+
+		    if (commObj == null)
+		    {
+		        rcvMsg = "Json解析错误";
+		    }
+		    else
+		    {
+                commObj.RcvTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                rcvMsg = commObj.ToString();
+		    }
+
             new Thread(Check).Start();
             //txtMessage.Text += "I got it:" + message;				
             //txtMessage.Text += System.Environment.NewLine;

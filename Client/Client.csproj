@@ -67,9 +67,13 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Qzeim.ThrdPrint.BroadCast.Common">
+      <HintPath>..\Common\bin\Debug\Qzeim.ThrdPrint.BroadCast.Common.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
@@ -84,10 +88,6 @@
     </Reference>
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
-    </Reference>
-    <Reference Include="Wayfarer.BroadCast.Common">
-      <Name>Wayfarer.BroadCast.Common</Name>
-      <HintPath>..\Common\bin\Debug\Wayfarer.BroadCast.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -108,9 +108,12 @@
       <DependentUpon>ClientForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent />
-    <PostBuildEvent />
+    <PostBuildEvent>copy "$(ProjectDir)\*.config" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

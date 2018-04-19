@@ -8,12 +8,13 @@ using System.Runtime.Serialization.Formatters;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
-using Wayfarer.BroadCast.Common;
+using System.Runtime.Remoting.Channels.Tcp;
+using Qzeim.ThrdPrint.BroadCast.Common;
 
 //using Wayfarer.BroadCast.Common;
 //using Wayfarer.BroadCast.RemoteObject;
 
-namespace Wayfarer.BroadCast.Server
+namespace Qzeim.ThrdPrint.BroadCast.Server
 {
 	/// <summary>
 	/// SendToServerForm 的摘要说明。
@@ -33,7 +34,7 @@ namespace Wayfarer.BroadCast.Server
 
 	    private IUpCast upCast = null;
 //		private IBroadCast bc = null;
-	    private HttpChannel channel = null;
+	    private TcpChannel channel = null;
 
 		#endregion
 
@@ -142,17 +143,21 @@ namespace Wayfarer.BroadCast.Server
 		{
 			if (txtInfo.Text != string.Empty)
             {
-                #region 服务端订阅客户端事件
+                CommObj commObj = new CommObj(0x10,
+                                              0x01,
+                                              DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                                              "string",
+                                              txtInfo.Text);
 
-                // ServerForm.Obj.BroadCastingInfo(txtInfo.Text);
-                upCast.SendMsg("client send time--"+DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")+"--:"+txtInfo.Text);
-
-				#endregion			
+                string json = CommObj.ToJson(commObj);
+                upCast.SendMsg(json);
+	
 			}
 			else
 			{
 				MessageBox.Show("请输入信息！");
 			}
+
 		}
 
         private void SendToServerForm_Load(object sender, System.EventArgs e)
@@ -165,18 +170,17 @@ namespace Wayfarer.BroadCast.Server
 //			
             IDictionary props = new Hashtable();
             props["port"] = 0;
-            props["name"] = "ClientHttp";
-            channel = new HttpChannel(props, clientProvider, serverProvider);
+            props["name"] = "ClientTcp";
+            channel = new TcpChannel(props, clientProvider, serverProvider);
             ChannelServices.RegisterChannel(channel);
 //			
 //			bc = (IBroadCast)Activator.GetObject(
-//				typeof(IBroadCast),"http://localhost:8080/BroadCastMessage.soap");
+//				typeof(IBroadCast),"http://localhost:8086/BroadCastMessage.soap");
 
             //HttpChannel channel = new HttpChannel(1);
             //ChannelServices.RegisterChannel(channel);
 
-            upCast = (IUpCast)Activator.GetObject(typeof(IUpCast),
-                "http://localhost:8080/UpCastMessage.soap");
+            upCast = (IUpCast)Activator.GetObject(typeof(IUpCast),"tcp://localhost:8086/UpCastObj.soap");
 
 
 			#endregion

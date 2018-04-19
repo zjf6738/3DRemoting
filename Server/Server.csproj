@@ -82,9 +82,16 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Qzeim.ThrdPrint.BroadCast.Common">
+      <HintPath>..\Common\bin\Debug\Qzeim.ThrdPrint.BroadCast.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Qzeim.ThrdPrint.BroadCast.RemoteObject">
+      <HintPath>..\RemoteObject\bin\Debug\Qzeim.ThrdPrint.BroadCast.RemoteObject.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
@@ -99,14 +106,6 @@
     </Reference>
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
-    </Reference>
-    <Reference Include="Wayfarer.BroadCast.Common">
-      <Name>Wayfarer.BroadCast.Common</Name>
-      <HintPath>..\Common\bin\Debug\Wayfarer.BroadCast.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Wayfarer.BroadCast.RemoteObject">
-      <Name>Wayfarer.BroadCast.RemoteObject</Name>
-      <HintPath>..\RemoteObject\bin\Debug\Wayfarer.BroadCast.RemoteObject.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -139,9 +138,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent />
-    <PostBuildEvent />
+    <PostBuildEvent>copy "$(ProjectDir)\*.config" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

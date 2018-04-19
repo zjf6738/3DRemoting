@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wayfarer.BroadCast.Common
+namespace Qzeim.ThrdPrint.BroadCast.Common
 {
     public delegate void UpCastEventHandler(string msg);
 

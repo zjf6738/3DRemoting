@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Runtime.Remoting.Messaging;
-using Wayfarer.BroadCast.Common;
+using Qzeim.ThrdPrint.BroadCast.Common;
 
-namespace Wayfarer.BroadCast.RemoteObject
+namespace Qzeim.ThrdPrint.BroadCast.RemoteObject
 {
     public class UpCastObj : MarshalByRefObject, IUpCast
     {

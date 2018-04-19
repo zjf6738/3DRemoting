@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Remoting.Messaging;
 
-namespace Wayfarer.BroadCast.Common
+namespace Qzeim.ThrdPrint.BroadCast.Common
 {
 	/// <summary>
 	/// EventClass 的摘要说明。
