@@ -9,6 +9,7 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
 using System.Runtime.Remoting.Channels.Tcp;
+using log4net;
 using Qzeim.ThrdPrint.BroadCast.Common;
 
 //using Wayfarer.BroadCast.Common;
@@ -19,6 +20,7 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 	/// <summary>
 	/// SendToServerForm 的摘要说明。
 	/// </summary>
+    [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 	public class SendToServerForm : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.Button btnSend;
@@ -151,6 +153,9 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 
                 string json = CommObj.ToJson(commObj);
                 upCast.SendMsg(json);
+
+                ILog log = log4net.LogManager.GetLogger("server.Logging");
+                log.Info("upCast.SendMsg--" + json);
 	
 			}
 			else

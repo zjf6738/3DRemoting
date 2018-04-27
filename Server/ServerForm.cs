@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Windows.Forms;
 using System.Data;
+using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 //using System.Runtime.Remoting.Channels.Http;
@@ -13,15 +15,17 @@ using System.Runtime.Serialization.Formatters;
 using System.Threading;
 using Qzeim.ThrdPrint.BroadCast.RemoteObject;
 using Qzeim.ThrdPrint.BroadCast.Common;
+using log4net;
 
 namespace Qzeim.ThrdPrint.BroadCast.Server
 {
 	/// <summary>
 	/// Form1 的摘要说明。
 	/// </summary>
+
+    [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 	public class ServerForm : System.Windows.Forms.Form
-	{
-		private System.Windows.Forms.ListBox lbMonitor;
+    {
 		private System.Windows.Forms.Button btnClear;
 		private System.Windows.Forms.Button btnBC;
 		/// <summary>
@@ -74,7 +78,6 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 		/// </summary>
 		private void InitializeComponent()
 		{
-            this.lbMonitor = new System.Windows.Forms.ListBox();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnBC = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -82,15 +85,6 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             this.txtBCMsg = new System.Windows.Forms.TextBox();
             this.txtMessage = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
-            // 
-            // lbMonitor
-            // 
-            this.lbMonitor.ItemHeight = 12;
-            this.lbMonitor.Location = new System.Drawing.Point(32, 40);
-            this.lbMonitor.Name = "lbMonitor";
-            this.lbMonitor.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lbMonitor.Size = new System.Drawing.Size(75, 28);
-            this.lbMonitor.TabIndex = 0;
             // 
             // btnClear
             // 
@@ -137,11 +131,11 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             // 
             // txtMessage
             // 
-            this.txtMessage.Location = new System.Drawing.Point(125, 40);
+            this.txtMessage.Location = new System.Drawing.Point(34, 40);
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtMessage.Size = new System.Drawing.Size(381, 184);
+            this.txtMessage.Size = new System.Drawing.Size(472, 184);
             this.txtMessage.TabIndex = 6;
             // 
             // ServerForm
@@ -154,7 +148,6 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnBC);
             this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.lbMonitor);
             this.Name = "ServerForm";
             this.Text = "FileWatcher";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ServerForm_FormClosing);
@@ -174,8 +167,38 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 			Application.Run(new ServerForm());
 		}
 
-		private void StartServer()
-		{
+        #region 窗体的加载、关闭等操作
+        private void ServerForm_Load(object sender, System.EventArgs e)
+        {
+            StartServer();
+            InitLog4net();
+            //lbMonitor.Items.Add("Server started!");
+            txtMessage.Text += "Server started!\r\n";
+        }
+
+
+        private void btnClear_Click(object sender, System.EventArgs e)
+        {
+            //lbMonitor.Items.Clear();
+            txtMessage.Text = "";
+        }
+
+        private void ServerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 释放通道
+            //foreach (IChannel channel in ChannelServices.RegisteredChannels)
+            //{
+            //    ChannelServices.UnregisterChannel(channel);
+            //}
+            FinishServer();
+        } 
+        #endregion
+
+        #region 通信部分
+
+        // 初始化及配置
+        private void StartServer()
+        {
             BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
             BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
             serverProvider.TypeFilterLevel = TypeFilterLevel.Full;
@@ -186,7 +209,7 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             string channelPort = ConfigurationManager.AppSettings["ChannelPort"];
             string broadCastObjURI = ConfigurationManager.AppSettings["BroadCastObjURI"];
             string upCastObjURI = ConfigurationManager.AppSettings["UpCastObjURI"];
-
+            string visUpCastObjURI = ConfigurationManager.AppSettings["VisUpCastObjURI"];
 
 
             IDictionary props = new Hashtable();
@@ -195,29 +218,39 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             TcpChannel channel = new TcpChannel(props, clientProvider, serverProvider);
             ChannelServices.RegisterChannel(channel);
 
-            // 通过配置文件进行配置
-            //string cfg = "Server.config";
-            //RemotingConfiguration.Configure(cfg);
-
-
-			// 客户端订阅服务端广播事件
+            // 客户端订阅服务端广播事件
             // 将远程对象推送到通道中，这样就可以让客户端进行访问
-			Obj = new BroadCastObj();
-            ObjRef objRef = RemotingServices.Marshal(Obj, broadCastObjURI);	
+            Obj = new BroadCastObj();
+            ObjRef objRef = RemotingServices.Marshal(Obj, broadCastObjURI);
 
             // 服务端订阅客户端事件
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(UpCastObj), upCastObjURI, WellKnownObjectMode.Singleton);
+            RemotingConfiguration.RegisterWellKnownServiceType(typeof(VisUpCastObj), visUpCastObjURI, WellKnownObjectMode.Singleton);
 
-		    UpCastObj.UpCastEvent += OnUpCastEvent;
+            UpCastObj.UpCastEvent += OnUpCastEvent;
+            VisUpCastObj.UpCastEvent += OnVisUpCastEvent;
 
+        }
 
-		}
-
-	    public void OnUpCastEvent(string msg)
+	    private void FinishServer()
 	    {
+            // 释放通道
+            foreach (IChannel channel in ChannelServices.RegisteredChannels)
+            {
+                ChannelServices.UnregisterChannel(channel);
+            }
+
+            UpCastObj.UpCastEvent -= OnUpCastEvent;
+
+	    }
+
+
+
+        // 响应客户端的事件
+        public void OnUpCastEvent(string msg)
+        {
             CommObj commObj = CommObj.FromJson(msg);
 
-	        
             if (commObj == null)
             {
                 rcvMsg = "Json解析错误";
@@ -228,9 +261,13 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
                 rcvMsg = commObj.ToString();
             }
 
-	        //lbMonitor.Items.Add(rcvMsg);
+            //lbMonitor.Items.Add(rcvMsg);
             new Thread(Check).Start();
-	    }
+
+            ILog log = log4net.LogManager.GetLogger("server.Logging");
+            log.Info("OnUpCastEvent--" + rcvMsg);
+
+        }
 
         public void Check()
         {
@@ -241,22 +278,32 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
                 }));
         }
 
+        public void OnVisUpCastEvent(string msg)
+        {
+            CommObj commObj = CommObj.FromJson(msg);
 
-		private void ServerForm_Load(object sender, System.EventArgs e)
-		{
-			StartServer();
-			//lbMonitor.Items.Add("Server started!");
-		    txtMessage.Text += "Server started!\r\n";
-		}
+            if (commObj == null)
+            {
+                rcvMsg = "Json解析错误";
+            }
+            else
+            {
+                commObj.RcvTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                rcvMsg = commObj.ToString();
+            }
 
-		private void btnClear_Click(object sender, System.EventArgs e)
-		{
-			//lbMonitor.Items.Clear();
-		    txtMessage.Text = "";
-		}
+            new Thread(Check).Start();
 
-		private void btnBC_Click(object sender, System.EventArgs e)
-		{			
+            ILog log = log4net.LogManager.GetLogger("server.Logging");
+            log.Info("OnVisUpCastEvent--" + rcvMsg);
+
+        }
+
+
+
+        // 广播事件
+        private void btnBC_Click(object sender, System.EventArgs e)
+        {
             //BroadCastForm bcForm = new BroadCastForm();
             //bcForm.StartPosition = FormStartPosition.CenterParent;
             //bcForm.ShowDialog();
@@ -273,20 +320,31 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
                 string json = CommObj.ToJson(commObj);
 
                 Obj.BroadCastingInfo(json);
+                ILog log = log4net.LogManager.GetLogger("server.Logging");
+                log.Info("Obj.BroadCastingInfo--" + json);
+                // log.Error("error", new Exception("发生了一个异常"));
             }
             else
             {
                 MessageBox.Show("请输入信息！");
             }
-		}
+        }
 
-        private void ServerForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // 释放通道
-            foreach (IChannel channel in ChannelServices.RegisteredChannels)
-            {
-                ChannelServices.UnregisterChannel(channel);
-            }
-        }		
-	}
+
+        #endregion
+
+
+        #region 日志模块
+	    ILog log = null;
+
+	    private void InitLog4net()
+	    {
+	        log = log4net.LogManager.GetLogger("server.Logging");
+	        Debug.Assert(log != null);
+	    }
+
+	    #endregion
+
+
+    }
 }

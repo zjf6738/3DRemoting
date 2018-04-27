@@ -13,6 +13,7 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Threading;
+using log4net;
 using Qzeim.ThrdPrint.BroadCast.Common;
 using Qzeim.ThrdPrint.BroadCast.Server;
 
@@ -21,6 +22,7 @@ namespace Qzeim.ThrdPrint.BroadCast.Client
 	/// <summary>
 	/// Form1 的摘要说明。
 	/// </summary>
+    [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 	public class ClientForm : System.Windows.Forms.Form
 	{
 		/// <summary>
@@ -30,13 +32,11 @@ namespace Qzeim.ThrdPrint.BroadCast.Client
 		private System.Windows.Forms.Button btnClear;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button btnCancle;
-		private IBroadCast watch = null;
 		private System.Windows.Forms.TextBox txtMessage;
         private Button btnSubscribe;
-		private EventWrapper wrapper = null;
 	    private bool isSubscribe = false;
         private Button btn_Send;
-	    private string rcvMsg = "";
+
 
 	    private void SetSubscribe(bool flag){isSubscribe = flag;}
 
@@ -166,6 +166,49 @@ namespace Qzeim.ThrdPrint.BroadCast.Client
 
 		private void ClientForm_Load(object sender, System.EventArgs e)
 		{
+		    StartClient();
+		}
+
+        private void ClientForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            FinishClient();
+        }
+
+        private void btnClear_Click(object sender, System.EventArgs e)
+        {
+            txtMessage.Text = "";
+        }
+
+		private void btnCancle_Click(object sender, System.EventArgs e)
+		{
+			watch.BroadCastEvent -= new BroadCastEventHandler(wrapper.BroadCasting);
+            SetSubscribe(false);
+            MessageBox.Show("取消订阅广播成功!");
+		}
+
+	    private void btnSubscribe_Click(object sender, EventArgs e)
+        {
+            if (!isSubscribe)
+            {
+                watch.BroadCastEvent += new BroadCastEventHandler(wrapper.BroadCasting);
+                SetSubscribe(true);
+                MessageBox.Show("重新订阅广播成功!");
+            }
+            else
+            {
+                MessageBox.Show("你已订阅广播，不能重复订阅!");
+            }
+        }
+
+        #region 通信部分
+
+        private IBroadCast watch = null;
+        private EventWrapper wrapper = null;
+        private string rcvMsg = "";
+
+        // 开启客户端
+        private void StartClient()
+        {
             BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
             BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
             serverProvider.TypeFilterLevel = TypeFilterLevel.Full;
@@ -185,35 +228,42 @@ namespace Qzeim.ThrdPrint.BroadCast.Client
             // 获取广播远程对象
             watch = (IBroadCast)Activator.GetObject(typeof(IBroadCast), broadCastObjURL);
 
-			wrapper = new EventWrapper();	
-			wrapper.LocalBroadCastEvent += new BroadCastEventHandler(BroadCastingMessage);
-			watch.BroadCastEvent += new BroadCastEventHandler(wrapper.BroadCasting);
+            wrapper = new EventWrapper();
+            wrapper.LocalBroadCastEvent += new BroadCastEventHandler(BroadCastingMessage);
+            watch.BroadCastEvent += new BroadCastEventHandler(wrapper.BroadCasting);
             SetSubscribe(true);
-		}
+        }
 
-		private void btnClear_Click(object sender, System.EventArgs e)
-		{
-			txtMessage.Text = "";
-		}
+        // 结束客户端
+        private void FinishClient()
+        {
+            if (isSubscribe)
+            {
+                watch.BroadCastEvent -= new BroadCastEventHandler(wrapper.BroadCasting);
+            }
+        }
 
-		public void BroadCastingMessage(string message)
-		{
-		    CommObj commObj = CommObj.FromJson(message);
+        // 响应广播信息
+        public void BroadCastingMessage(string message)
+        {
+            CommObj commObj = CommObj.FromJson(message);
 
-		    if (commObj == null)
-		    {
-		        rcvMsg = "Json解析错误";
-		    }
-		    else
-		    {
+            if (commObj == null)
+            {
+                rcvMsg = "Json解析错误";
+            }
+            else
+            {
                 commObj.RcvTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 rcvMsg = commObj.ToString();
-		    }
+            }
 
             new Thread(Check).Start();
-            //txtMessage.Text += "I got it:" + message;				
-            //txtMessage.Text += System.Environment.NewLine;
-		}
+
+            ILog log = log4net.LogManager.GetLogger("server.Logging");
+            log.Info("BroadCastingMessage--" + rcvMsg);
+
+        }
 
         public void Check()
         {
@@ -225,42 +275,14 @@ namespace Qzeim.ThrdPrint.BroadCast.Client
                 }));
         }
 
-
-
-		private void btnCancle_Click(object sender, System.EventArgs e)
-		{
-			watch.BroadCastEvent -= new BroadCastEventHandler(wrapper.BroadCasting);
-            SetSubscribe(false);
-            MessageBox.Show("取消订阅广播成功!");
-		}
-
-		private void ClientForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-		{
-		    if (isSubscribe)
-		    {
-                watch.BroadCastEvent -= new BroadCastEventHandler(wrapper.BroadCasting);
-		    }
-		}
-
-        private void btnSubscribe_Click(object sender, EventArgs e)
-        {
-            if (!isSubscribe)
-            {
-                watch.BroadCastEvent += new BroadCastEventHandler(wrapper.BroadCasting);
-                SetSubscribe(true);
-                MessageBox.Show("重新订阅广播成功!");
-            }
-            else
-            {
-                MessageBox.Show("你已订阅广播，不能重复订阅!");
-            }
-        }
-
+        // 发送消息到服务端
         private void btn_Send_Click(object sender, EventArgs e)
         {
             SendToServerForm ssForm = new SendToServerForm();
             ssForm.StartPosition = FormStartPosition.CenterParent;
             ssForm.ShowDialog();
-        }		
+        }
+        #endregion
+
 	}
 }

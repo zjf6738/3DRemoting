@@ -13,7 +13,11 @@ namespace Qzeim.ThrdPrint.BroadCast.Common
 		//[OneWay]
 		public void BroadCasting(string message)
 		{
-			LocalBroadCastEvent(message);
+		    if (LocalBroadCastEvent != null)
+		    {
+		        LocalBroadCastEvent(message);
+		    }
+
 		}
 
 		public override object InitializeLifetimeService()

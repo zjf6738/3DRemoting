@@ -18,6 +18,7 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 	/// <summary>
 	/// BroadCastForm 的摘要说明。
 	/// </summary>
+    [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 	public class BroadCastForm : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.Button btnSend;
