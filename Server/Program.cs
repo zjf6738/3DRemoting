@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using Emgu.CV;
+using Qzeim.ThrdPrint.BroadCast.Server;
 
 namespace CameraCapture
 {
@@ -23,7 +23,7 @@ namespace CameraCapture
 
          //Form frm = new CameraCapture();
          //Form frm = new VideoRecord();
-         Form frm = new CameraCapture2();
+         Form frm = new ServerForm2();
 
          Application.Run(frm);
       }

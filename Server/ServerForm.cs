@@ -158,14 +158,14 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 		}
 		#endregion
 
-		/// <summary>
-		/// 应用程序的主入口点。
-		/// </summary>
-		[STAThread]
-		static void Main() 
-		{
-			Application.Run(new ServerForm());
-		}
+        ///// <summary>
+        ///// 应用程序的主入口点。
+        ///// </summary>
+        //[STAThread]
+        //static void Main() 
+        //{
+        //    Application.Run(new ServerForm());
+        //}
 
         #region 窗体的加载、关闭等操作
         private void ServerForm_Load(object sender, System.EventArgs e)

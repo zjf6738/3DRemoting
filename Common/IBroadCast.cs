@@ -9,4 +9,10 @@ namespace Qzeim.ThrdPrint.BroadCast.Common
 		event BroadCastEventHandler BroadCastEvent;
 		void BroadCastingInfo(string info);
 	}
+
+    public interface IBroadCastHandler
+    {
+        void OnBroadCastingInfo(string info);
+    }
+
 }

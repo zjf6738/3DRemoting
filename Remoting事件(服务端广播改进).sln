@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraCapture", "CameraCapture\CameraCapture.csproj", "{5F6B97F8-7EA6-4B5D-9A5D-F5581505C303}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoverClient", "MoverClient\MoverClient.csproj", "{620BE170-D199-4328-93F2-1E465CD3ADB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{5F6B97F8-7EA6-4B5D-9A5D-F5581505C303}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F6B97F8-7EA6-4B5D-9A5D-F5581505C303}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F6B97F8-7EA6-4B5D-9A5D-F5581505C303}.Release|Any CPU.Build.0 = Release|Any CPU
+		{620BE170-D199-4328-93F2-1E465CD3ADB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{620BE170-D199-4328-93F2-1E465CD3ADB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{620BE170-D199-4328-93F2-1E465CD3ADB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{620BE170-D199-4328-93F2-1E465CD3ADB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
