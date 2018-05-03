@@ -47,6 +47,9 @@ namespace CameraCapture
         private VideoWriter vw;
         private bool flag = false;
 
+        // 通信模块
+        private readonly VisComm visComm;
+
         public VisComm VisComm
         {
             get { return visComm; }
@@ -247,7 +250,7 @@ namespace CameraCapture
 
         #region 日志模块
         ILog log = null;
-        private readonly VisComm visComm;
+
 
         private void InitLog4net()
         {

@@ -261,6 +261,22 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
         protected int numberOfMoverSend = 0;
         protected int numberOfMoverRcv = 0;
 
+        //protected string severState = "已启动";
+        //protected int numOfBroadCastEventObserver = 3;
+        //protected int numOfVisUpCastEventObserver = 1;
+        //protected int numOfRobotUpCastEventObserver = 1;
+        //protected int numOfMoverUpCastEventObserver = 1;
+        //protected int numberOfServerSend = 5;
+        //protected int numberOfServerRcv = 5;
+        //protected int numberOfVisSend = 3;
+        //protected int numberOfVisRcv = 5;
+        //protected int numberOfRobotSend = 2;
+        //protected int numberOfRobotRcv = 5;
+        //protected int numberOfMoverSend = 0;
+        //protected int numberOfMoverRcv = 5;
+
+
+
         private ServerForm2 frm;
         public ServerMonitor(ServerForm2 _frm)
         {
