@@ -19,6 +19,7 @@ using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.Util;
+using Newtonsoft.Json;
 
 namespace CameraCapture
 {
@@ -46,7 +47,6 @@ namespace CameraCapture
         private VideoWriter vw1 = null;
         private VideoWriter vw2 = null;
         private VideoWriter vw3 = null;
-
 
         // 通信模块
         private VisComm visComm = null;
@@ -99,6 +99,7 @@ namespace CameraCapture
             visLog = new VisLog();
             // 监控
             visMonitor = new VisMonitor();
+            
 
             // UI更新
             propertyGrid1.SelectedObject = visMonitor;
@@ -232,7 +233,28 @@ namespace CameraCapture
                 }));
         }
 
-        // 发送消息到服务端
+        // 定时发送消息到服务端
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
+
+
+            CommObj commObj = new CommObj();
+            commObj.SrcId = 0x10;
+            commObj.DestId = 0x30;
+            commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            commObj.DataType = "PLCParas";
+            commObj.DataCmd = "";
+            commObj.DataBody = "";
+
+            string json = CommObj.ToJson(commObj);
+
+            // VisComm.upCast.SendMsg(json);
+            // VisComm.SendToServer(json);
+
+            // visLog.Info("visUpcast.SendMsg--" + json);
+        }
+
 
         #endregion
 
@@ -277,7 +299,7 @@ namespace CameraCapture
         {
             string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
 
-            if (Recordbutton.Text == "一键录制")
+            if (recordButton.Text == "一键录制")
             {
                 if (MessageBox.Show("开始录制吗？", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
                 {
@@ -313,7 +335,7 @@ namespace CameraCapture
                     Application.Idle += new EventHandler(ProcessFrame2);
                     Application.Idle += new EventHandler(ProcessFrame3);
 
-                    Recordbutton.Text = "暂停录制";
+                    recordButton.Text = "暂停录制";
                 }
 
 
@@ -331,10 +353,11 @@ namespace CameraCapture
                     Application.Idle -= new EventHandler(ProcessFrame1);
                     Application.Idle -= new EventHandler(ProcessFrame2);
                     Application.Idle -= new EventHandler(ProcessFrame3);
-                    Recordbutton.Text = "录制";
+                    recordButton.Text = "录制";
                 }
             }
         }
+
     }
 
     public class VisMonitor
@@ -470,48 +493,56 @@ namespace CameraCapture
             set { fpsOfFrame3 = value; }
         }
 
+        [Browsable(false)]
         public uint LastNumberImagesCapturedByFrame0
         {
             get { return lastNumberImagesCapturedByFrame0; }
             set { lastNumberImagesCapturedByFrame0 = value; }
         }
 
+        [Browsable(false)]
         public uint LastNumberImagesCapturedByFrame1
         {
             get { return lastNumberImagesCapturedByFrame1; }
             set { lastNumberImagesCapturedByFrame1 = value; }
         }
 
+        [Browsable(false)]
         public uint LastNumberImagesCapturedByFrame2
         {
             get { return lastNumberImagesCapturedByFrame2; }
             set { lastNumberImagesCapturedByFrame2 = value; }
         }
 
+        [Browsable(false)]
         public uint LastNumberImagesCapturedByFrame3
         {
             get { return lastNumberImagesCapturedByFrame3; }
             set { lastNumberImagesCapturedByFrame3 = value; }
         }
 
+        [Browsable(false)]
         public long LastTicksOfFrame0
         {
             get { return lastTicksOfFrame0; }
             set { lastTicksOfFrame0 = value; }
         }
 
+        [Browsable(false)]
         public long LastTicksOfFrame1
         {
             get { return lastTicksOfFrame1; }
             set { lastTicksOfFrame1 = value; }
         }
 
+        [Browsable(false)]
         public long LastTicksOfFrame2
         {
             get { return lastTicksOfFrame2; }
             set { lastTicksOfFrame2 = value; }
         }
 
+        [Browsable(false)]
         public long LastTicksOfFrame3
         {
             get { return lastTicksOfFrame3; }

@@ -50,6 +50,7 @@
             this.imageBox0 = new Emgu.CV.UI.ImageBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -205,9 +206,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(3, 6);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(47, 12);
+            this.label4.Size = new System.Drawing.Size(35, 12);
             this.label4.TabIndex = 6;
-            this.label4.Text = "相机4-1";
+            this.label4.Text = "相机4";
             // 
             // imageBox3
             // 
@@ -243,9 +244,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(15, 6);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(47, 12);
+            this.label3.Size = new System.Drawing.Size(35, 12);
             this.label3.TabIndex = 6;
-            this.label3.Text = "相机3-1";
+            this.label3.Text = "相机3";
             // 
             // imageBox2
             // 
@@ -281,9 +282,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(3, 6);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(47, 12);
+            this.label2.Size = new System.Drawing.Size(35, 12);
             this.label2.TabIndex = 5;
-            this.label2.Text = "相机2-1";
+            this.label2.Text = "相机2";
             // 
             // imageBox1
             // 
@@ -319,9 +320,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(15, 6);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(47, 12);
+            this.label1.Size = new System.Drawing.Size(35, 12);
             this.label1.TabIndex = 5;
-            this.label1.Text = "相机1-1";
+            this.label1.Text = "相机1";
             // 
             // imageBox0
             // 
@@ -349,6 +350,11 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(814, 83);
             this.textBox1.TabIndex = 0;
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // CameraCapture2
             // 
@@ -416,6 +422,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button captureButton;
+        private System.Windows.Forms.Timer timer1;
 
 
 

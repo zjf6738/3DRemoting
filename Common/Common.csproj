@@ -96,6 +96,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IUpCast.cs" />
+    <Compile Include="PLCControlObj.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

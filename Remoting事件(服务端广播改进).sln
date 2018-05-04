@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraCapture", "CameraCapt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoverClient", "MoverClient\MoverClient.csproj", "{620BE170-D199-4328-93F2-1E465CD3ADB7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTests", "CommonTests\CommonTests.csproj", "{322D4E48-BC0D-4632-9E8A-AAEC3C04CD95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommomTest", "CommomTest\CommomTest.csproj", "{8132BE16-186C-4D4A-BBEF-DA49F1E5F7D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{620BE170-D199-4328-93F2-1E465CD3ADB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{620BE170-D199-4328-93F2-1E465CD3ADB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{620BE170-D199-4328-93F2-1E465CD3ADB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{322D4E48-BC0D-4632-9E8A-AAEC3C04CD95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{322D4E48-BC0D-4632-9E8A-AAEC3C04CD95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{322D4E48-BC0D-4632-9E8A-AAEC3C04CD95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{322D4E48-BC0D-4632-9E8A-AAEC3C04CD95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8132BE16-186C-4D4A-BBEF-DA49F1E5F7D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8132BE16-186C-4D4A-BBEF-DA49F1E5F7D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8132BE16-186C-4D4A-BBEF-DA49F1E5F7D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8132BE16-186C-4D4A-BBEF-DA49F1E5F7D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
