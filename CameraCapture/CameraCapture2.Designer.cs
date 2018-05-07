@@ -32,6 +32,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.recordButton = new System.Windows.Forms.Button();
             this.captureButton = new System.Windows.Forms.Button();
+            this.commTestButton = new System.Windows.Forms.Button();
             this.snapButton = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
@@ -90,6 +91,7 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.recordButton);
             this.splitContainer1.Panel1.Controls.Add(this.captureButton);
+            this.splitContainer1.Panel1.Controls.Add(this.commTestButton);
             this.splitContainer1.Panel1.Controls.Add(this.snapButton);
             // 
             // splitContainer1.Panel2
@@ -101,7 +103,7 @@
             // 
             // recordButton
             // 
-            this.recordButton.Location = new System.Drawing.Point(299, 12);
+            this.recordButton.Location = new System.Drawing.Point(424, 12);
             this.recordButton.Name = "recordButton";
             this.recordButton.Size = new System.Drawing.Size(75, 23);
             this.recordButton.TabIndex = 1;
@@ -119,9 +121,19 @@
             this.captureButton.UseVisualStyleBackColor = true;
             this.captureButton.Click += new System.EventHandler(this.captureButton_Click);
             // 
+            // commTestButton
+            // 
+            this.commTestButton.Location = new System.Drawing.Point(543, 12);
+            this.commTestButton.Name = "commTestButton";
+            this.commTestButton.Size = new System.Drawing.Size(75, 23);
+            this.commTestButton.TabIndex = 0;
+            this.commTestButton.Text = "通信测试";
+            this.commTestButton.UseVisualStyleBackColor = true;
+            this.commTestButton.Click += new System.EventHandler(this.commTestButton_Click);
+            // 
             // snapButton
             // 
-            this.snapButton.Location = new System.Drawing.Point(196, 12);
+            this.snapButton.Location = new System.Drawing.Point(323, 12);
             this.snapButton.Name = "snapButton";
             this.snapButton.Size = new System.Drawing.Size(75, 23);
             this.snapButton.TabIndex = 0;
@@ -217,6 +229,7 @@
             this.imageBox3.Location = new System.Drawing.Point(0, 0);
             this.imageBox3.Name = "imageBox3";
             this.imageBox3.Size = new System.Drawing.Size(285, 143);
+            this.imageBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.imageBox3.TabIndex = 2;
             this.imageBox3.TabStop = false;
             // 
@@ -255,6 +268,7 @@
             this.imageBox2.Location = new System.Drawing.Point(0, 0);
             this.imageBox2.Name = "imageBox2";
             this.imageBox2.Size = new System.Drawing.Size(285, 143);
+            this.imageBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.imageBox2.TabIndex = 2;
             this.imageBox2.TabStop = false;
             // 
@@ -293,6 +307,7 @@
             this.imageBox1.Location = new System.Drawing.Point(0, 0);
             this.imageBox1.Name = "imageBox1";
             this.imageBox1.Size = new System.Drawing.Size(285, 143);
+            this.imageBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.imageBox1.TabIndex = 2;
             this.imageBox1.TabStop = false;
             // 
@@ -353,7 +368,6 @@
             // 
             // timer1
             // 
-            this.timer1.Enabled = true;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // CameraCapture2
@@ -364,6 +378,8 @@
             this.Controls.Add(this.splitContainer1);
             this.Name = "CameraCapture2";
             this.Text = "3D打印视觉系统";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CameraCapture2_FormClosing);
+            this.Load += new System.EventHandler(this.CameraCapture2_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
@@ -423,6 +439,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button captureButton;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Button commTestButton;
 
 
 

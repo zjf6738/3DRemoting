@@ -210,6 +210,8 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             string broadCastObjURI = ConfigurationManager.AppSettings["BroadCastObjURI"];
             string upCastObjURI = ConfigurationManager.AppSettings["UpCastObjURI"];
             string visUpCastObjURI = ConfigurationManager.AppSettings["VisUpCastObjURI"];
+            string moverUpCastObjURI = ConfigurationManager.AppSettings["MoverUpCastObjURI"];
+            string robotUpCastObjURI = ConfigurationManager.AppSettings["RobotUpCastObjURI"];
 
 
             IDictionary props = new Hashtable();
@@ -226,9 +228,13 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             // 服务端订阅客户端事件
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(UpCastObj), upCastObjURI, WellKnownObjectMode.Singleton);
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(VisUpCastObj), visUpCastObjURI, WellKnownObjectMode.Singleton);
+            RemotingConfiguration.RegisterWellKnownServiceType(typeof(RobotUpCastObj), robotUpCastObjURI, WellKnownObjectMode.Singleton);
+            RemotingConfiguration.RegisterWellKnownServiceType(typeof(MoverUpCastObj), moverUpCastObjURI, WellKnownObjectMode.Singleton);
 
             UpCastObj.UpCastEvent += OnUpCastEvent;
             VisUpCastObj.UpCastEvent += OnVisUpCastEvent;
+            RobotUpCastObj.UpCastEvent += OnRobotUpCastEvent;
+            MoverUpCastObj.UpCastEvent += OnMoverUpCastEvent;
 
         }
 
@@ -280,6 +286,9 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 
         public void OnVisUpCastEvent(string msg)
         {
+
+
+
             CommObj commObj = CommObj.FromJson(msg);
 
             if (commObj == null)
@@ -290,6 +299,9 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             {
                 commObj.RcvTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 rcvMsg = commObj.ToString();
+
+                Obj.BroadCastingInfo(msg);
+
             }
 
             new Thread(Check).Start();
@@ -299,7 +311,15 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 
         }
 
+        public void OnRobotUpCastEvent(string msg)
+        {
+            
+        }
 
+        public void OnMoverUpCastEvent(string msg)
+        {
+
+        }
 
         // 广播事件
         private void btnBC_Click(object sender, System.EventArgs e)

@@ -11,6 +11,13 @@ namespace CameraCapture
     public class VisLog
     {
         private ILog log = null;
+        private string logInfo = "";
+
+        public string LogInfo
+        {
+            get { return logInfo; }
+            set { logInfo = value; }
+        }
 
         public VisLog()
         {
@@ -26,17 +33,26 @@ namespace CameraCapture
 
         public void FrameCapture(int i)
         {
-            log.Info(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "frame"+i.ToString() +" captured");
+            logInfo = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "frame" + i.ToString() + " captured";
+            log.Info(logInfo);
         }
 
         public void VideoWriting(int i)
         {
-            log.Info(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "video" + i.ToString() + " writing...");
+            logInfo = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "video" + i.ToString() + " writing...";
+            log.Info(logInfo);
         }
 
         public void DisplayBroadCastInfo(string msg)
         {
-            log.Info("BroadCastingMessage--" + msg);
+            logInfo = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "BroadCastingMessage--" + msg;
+            log.Info(logInfo);
+        }
+
+        public void DisplaySendToServerInfo(string msg)
+        {
+            logInfo = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "send to server info--" + msg;
+            log.Info(logInfo);
         }
 
     }

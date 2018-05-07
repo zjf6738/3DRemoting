@@ -90,6 +90,8 @@
     <Compile Include="BroadCastObj.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MoverUpCastObj.cs" />
+    <Compile Include="RobotUpCastObj.cs" />
     <Compile Include="VisUpCastObj.cs" />
     <Compile Include="UpCastObj.cs" />
   </ItemGroup>

@@ -63,10 +63,19 @@ namespace CameraCapture
         {
             InitializeComponent();
 
+            // 通信
+            visComm = new VisComm(this);
+            // 日志
+            visLog = new VisLog();
+            // 监控
+            visMonitor = new VisMonitor();
+
+        }
+
+        private void CameraCapture2_Load(object sender, EventArgs e)
+        {
             // 初始化各个图像对象
             CvInvoke.UseOpenCL = false;
-
-            
 
             try
             {
@@ -86,23 +95,23 @@ namespace CameraCapture
                 frame1 = new Mat();
                 frame2 = new Mat();
                 frame3 = new Mat();
-            
+
             }
             catch (NullReferenceException excpt)
             {
                 MessageBox.Show(excpt.Message);
             }
 
-            // 通信
-            visComm = new VisComm(this); 
-            // 日志
-            visLog = new VisLog();
-            // 监控
-            visMonitor = new VisMonitor();
-            
-
             // UI更新
             propertyGrid1.SelectedObject = visMonitor;
+
+            // 通信
+            visComm.StartClient();
+        }
+
+        private void CameraCapture2_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            visComm.FinishClient();
         }
 
         #endregion
@@ -197,6 +206,22 @@ namespace CameraCapture
                 case 3:
                     visMonitor.相机4采集的总图像数++; break;
             }
+
+            visLog.FrameCapture(frameId);
+
+            new Thread(Check2).Start();
+
+        }
+
+
+        public void Check2()
+        {
+            lock (this)
+                Invoke(new MethodInvoker(delegate()
+                {
+                    //propertyGrid1.Update();
+                    propertyGrid1.Refresh();
+                }));
         }
 
 
@@ -230,6 +255,7 @@ namespace CameraCapture
                 {
                     //txtMessage.Text += "I got it:" + VisComm.RcvMsg;
                     //txtMessage.Text += System.Environment.NewLine;
+                    MessageBox.Show(visComm.RcvMsg);
                 }));
         }
 
@@ -237,22 +263,22 @@ namespace CameraCapture
         private void timer1_Tick(object sender, EventArgs e)
         {
 
-
+            PLCControlObj obj = new PLCControlObj(1, 1000, 1, 1000, 1, 1000, 1, 1000);
 
             CommObj commObj = new CommObj();
             commObj.SrcId = 0x10;
             commObj.DestId = 0x30;
             commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            commObj.DataType = "PLCParas";
+            commObj.DataType = "PLCControlObj";
             commObj.DataCmd = "";
-            commObj.DataBody = "";
+            commObj.DataBody = PLCControlObj.ToByteJson(obj);
 
             string json = CommObj.ToJson(commObj);
 
-            // VisComm.upCast.SendMsg(json);
-            // VisComm.SendToServer(json);
+            // visComm.SendToServer(json);
 
-            // visLog.Info("visUpcast.SendMsg--" + json);
+            visLog.DisplaySendToServerInfo(json);
+
         }
 
 
@@ -291,7 +317,7 @@ namespace CameraCapture
 
             for (int i = 0; i < 4; i++)
             {
-                imageBox0.Image.Save(dt+"-"+i.ToString());
+                imageBox0.Image.Save(dt+"-"+i.ToString()+".png");
             }
         }
 
@@ -345,6 +371,8 @@ namespace CameraCapture
                 if (MessageBox.Show("停止录制吗？", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
                 {
                     videoInProgress = false;
+
+
                     vw0.Dispose();
                     vw1.Dispose();
                     vw2.Dispose();
@@ -357,6 +385,39 @@ namespace CameraCapture
                 }
             }
         }
+
+        private void resSettingButton_Click(object sender, EventArgs e)
+        {
+            //capture0.SetCaptureProperty(CapProp.FrameHeight, 3088);
+            //capture0.SetCaptureProperty(CapProp.FrameWidth, 2064);
+            //capture0.SetCaptureProperty(CapProp.FrameHeight, 3088);
+        }
+
+        private void commTestButton_Click(object sender, EventArgs e)
+        {
+            PLCControlObj obj = new PLCControlObj(0, 1000, 1, 1000, 1, 1000, 1, 1000);
+
+            CommObj commObj = new CommObj();
+            commObj.SrcId = 0x10;
+            commObj.DestId = 0x30;
+            commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            commObj.DataType = "PLCControlObj";
+            commObj.DataCmd = "";
+            commObj.DataBody = PLCControlObj.ToByteJson(obj);
+
+            string json = CommObj.ToJson(commObj);
+
+            int N = 20;
+
+            for (int i = 0; i < N; i++)
+            {
+                visComm.SendToServer(json);
+                Thread.Sleep(1000);
+            }
+
+        }
+
+        
 
     }
 

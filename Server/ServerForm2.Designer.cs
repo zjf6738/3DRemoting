@@ -120,8 +120,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer1.Size = new System.Drawing.Size(757, 412);
-            this.splitContainer1.SplitterDistance = 482;
+            this.splitContainer1.Size = new System.Drawing.Size(829, 463);
+            this.splitContainer1.SplitterDistance = 527;
             this.splitContainer1.TabIndex = 1;
             // 
             // splitContainer2
@@ -138,8 +138,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtMessage);
-            this.splitContainer2.Size = new System.Drawing.Size(482, 412);
-            this.splitContainer2.SplitterDistance = 36;
+            this.splitContainer2.Size = new System.Drawing.Size(527, 463);
+            this.splitContainer2.SplitterDistance = 40;
             this.splitContainer2.TabIndex = 0;
             // 
             // label1
@@ -158,7 +158,7 @@
             this.txtMessage.Margin = new System.Windows.Forms.Padding(6);
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
-            this.txtMessage.Size = new System.Drawing.Size(482, 372);
+            this.txtMessage.Size = new System.Drawing.Size(527, 419);
             this.txtMessage.TabIndex = 0;
             // 
             // splitContainer3
@@ -175,8 +175,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer3.Size = new System.Drawing.Size(271, 412);
-            this.splitContainer3.SplitterDistance = 37;
+            this.splitContainer3.Size = new System.Drawing.Size(298, 463);
+            this.splitContainer3.SplitterDistance = 41;
             this.splitContainer3.TabIndex = 0;
             // 
             // label2
@@ -193,7 +193,7 @@
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(271, 371);
+            this.propertyGrid1.Size = new System.Drawing.Size(298, 418);
             this.propertyGrid1.TabIndex = 0;
             this.propertyGrid1.ToolbarVisible = false;
             // 
@@ -206,7 +206,7 @@
             this.测试ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(757, 25);
+            this.menuStrip1.Size = new System.Drawing.Size(829, 25);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -345,7 +345,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(757, 437);
+            this.ClientSize = new System.Drawing.Size(829, 488);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);

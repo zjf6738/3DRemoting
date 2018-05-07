@@ -83,7 +83,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net">
-      <HintPath>..\log4net-2.0.8\bin\net\2.0\release\log4net.dll</HintPath>
+      <HintPath>..\dll\log4net-2.0.8\bin\net\2.0\release\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Qzeim.ThrdPrint.BroadCast.Common">
       <HintPath>..\Common\bin\Debug\Qzeim.ThrdPrint.BroadCast.Common.dll</HintPath>
