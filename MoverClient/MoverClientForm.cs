@@ -18,8 +18,6 @@ namespace MoverClient
     public partial class MoverClientForm : Form, IBroadCastHandler
     {
 
-
-
         // 与服务端的通信
         private MoverComm moverComm = null;
 
@@ -32,7 +30,8 @@ namespace MoverClient
         // 日志记录
         private MoverLog moverLog = null;
 
-
+        // 发送次数
+        private int allSendCount = 0;
 
 
         public MoverClientForm()
@@ -95,7 +94,9 @@ namespace MoverClient
             lock (this)
                 Invoke(new MethodInvoker(delegate()
                 {
-                    MessageBox.Show(moverComm.RcvMsg);
+                    //MessageBox.Show(moverComm.RcvMsg);
+                    this.textBox1.Text += moverComm.RcvMsg;
+                    this.textBox1.Text += allSendCount.ToString();
                 }));
         }
 
@@ -108,12 +109,14 @@ namespace MoverClient
                 {
                     PLCControlObj plcControlObj = PLCControlObj.FromByteJson(commObj.DataBody);
                     SendToPLC(PLCControlObj.ToBytes(plcControlObj));
+                    allSendCount++;
+
                 }
             }
         }
 
 
-        private void SendToPLC(Byte [] data)
+        private void SendToPLCTest(Byte [] data)
         {
             //this.Wrapper.Send(Encoding.ASCII.GetBytes(this.tbxSendText.Text.Trim()));
             //this.Wrapper.Connect();
@@ -140,8 +143,24 @@ namespace MoverClient
 
                 //Thread.Sleep(100);
             }
+        }
 
+        private void SendToPLC(Byte[] data)
+        {
 
+            if (!socketWrapper.IsConnected) socketWrapper.Connect();
+
+            List<byte> values = new List<byte>(255);
+            values.AddRange(data);
+
+            Console.WriteLine("发送:" + DateTime.Now.ToString("yyyy-MM-dd HH:MM:SS:fff"));
+            socketWrapper.Write(values.ToArray());
+
+            //[4].防止连续读写引起前台UI线程阻塞00 
+            Application.DoEvents();
+            //[5].读取Response: 写完后会返回12个byte的结果
+            byte[] responseHeader = socketWrapper.Read(12);
+            Console.WriteLine("接收:" + DateTime.Now.ToString("yyyy-MM-dd HH:MM:SS:fff"));
 
         }
 

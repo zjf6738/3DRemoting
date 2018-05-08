@@ -286,9 +286,6 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 
         public void OnVisUpCastEvent(string msg)
         {
-
-
-
             CommObj commObj = CommObj.FromJson(msg);
 
             if (commObj == null)

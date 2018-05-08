@@ -57,6 +57,9 @@ namespace CameraCapture
         // 日志记录
         private VisLog visLog = null;
 
+        // 测试
+        private int allTimerCount = 1;
+
 
         #region 初始化
         public CameraCapture2()
@@ -255,15 +258,19 @@ namespace CameraCapture
                 {
                     //txtMessage.Text += "I got it:" + VisComm.RcvMsg;
                     //txtMessage.Text += System.Environment.NewLine;
-                    MessageBox.Show(visComm.RcvMsg);
+                    //MessageBox.Show(visComm.RcvMsg);
+                    this.textBox1.Text += visComm.RcvMsg;
                 }));
         }
 
         // 定时发送消息到服务端
         private void timer1_Tick(object sender, EventArgs e)
         {
+            if (allTimerCount % 20 == 0) { this.timer1.Enabled = false; }
+            allTimerCount++;
 
-            PLCControlObj obj = new PLCControlObj(1, 1000, 1, 1000, 1, 1000, 1, 1000);
+
+            PLCControlObj obj = new PLCControlObj(0, 500, 0, 0, 0, 0, 0, 0);
 
             CommObj commObj = new CommObj();
             commObj.SrcId = 0x10;
@@ -274,9 +281,9 @@ namespace CameraCapture
             commObj.DataBody = PLCControlObj.ToByteJson(obj);
 
             string json = CommObj.ToJson(commObj);
+            visComm.SendToServer(json);
 
             // visComm.SendToServer(json);
-
             visLog.DisplaySendToServerInfo(json);
 
         }
@@ -395,26 +402,56 @@ namespace CameraCapture
 
         private void commTestButton_Click(object sender, EventArgs e)
         {
-            PLCControlObj obj = new PLCControlObj(0, 1000, 1, 1000, 1, 1000, 1, 1000);
+            //PLCControlObj obj = new PLCControlObj(0, 1000, 1, 1000, 1, 1000, 1, 1000);
 
-            CommObj commObj = new CommObj();
-            commObj.SrcId = 0x10;
-            commObj.DestId = 0x30;
-            commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            commObj.DataType = "PLCControlObj";
-            commObj.DataCmd = "";
-            commObj.DataBody = PLCControlObj.ToByteJson(obj);
+            //CommObj commObj = new CommObj();
+            //commObj.SrcId = 0x10;
+            //commObj.DestId = 0x30;
+            //commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            //commObj.DataType = "PLCControlObj";
+            //commObj.DataCmd = "";
+            //commObj.DataBody = PLCControlObj.ToByteJson(obj);
 
-            string json = CommObj.ToJson(commObj);
+            //string json = CommObj.ToJson(commObj);
 
-            int N = 20;
+            //int N = 20;
 
-            for (int i = 0; i < N; i++)
-            {
-                visComm.SendToServer(json);
-                Thread.Sleep(1000);
-            }
+            //for (int i = 0; i < N; i++)
+            //{
+            //    visComm.SendToServer(json);
+            //    Thread.Sleep(1000);
+            //}
+            this.timer1.Enabled = true;
 
+            //new Thread(CheckCommTestButton).Start();
+
+        }
+
+        public void CheckCommTestButton()
+        {
+            lock (this)
+                Invoke(new MethodInvoker(delegate()
+                {
+                    PLCControlObj obj = new PLCControlObj(0, 1000, 1, 1000, 1, 1000, 1, 1000);
+
+                    CommObj commObj = new CommObj();
+                    commObj.SrcId = 0x10;
+                    commObj.DestId = 0x30;
+                    commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                    commObj.DataType = "PLCControlObj";
+                    commObj.DataCmd = "";
+                    commObj.DataBody = PLCControlObj.ToByteJson(obj);
+
+                    string json = CommObj.ToJson(commObj);
+
+                    int N = 20;
+
+                    for (int i = 0; i < N; i++)
+                    {
+                        visComm.SendToServer(json);
+                        Thread.Sleep(1000);
+                    }
+                }));
         }
 
         
