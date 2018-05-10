@@ -17,6 +17,7 @@ namespace Qzeim.ThrdPrint.BroadCast.RemoteObject
 		//[OneWay]
 		public void BroadCastingInfo(string info)
 		{
+            string errText = "";
 			if (BroadCastEvent != null)
 			{
 				BroadCastEventHandler tempEvent = null;
@@ -29,9 +30,10 @@ namespace Qzeim.ThrdPrint.BroadCast.RemoteObject
 						tempEvent = (BroadCastEventHandler)del;
 						tempEvent(info);
 					}
-					catch
-					{						
-						MessageBox.Show("事件订阅者" + index.ToString() + "发生错误,系统将取消事件订阅!");
+					catch(Exception ex)
+					{
+                        errText += "事件订阅者" + index.ToString() + "发生错误,系统将取消事件订阅!\r\n";
+						//MessageBox.Show("事件订阅者" + index.ToString() + "发生错误,系统将取消事件订阅!");
 						BroadCastEvent -= tempEvent;
 					}
 					index++;
@@ -39,8 +41,15 @@ namespace Qzeim.ThrdPrint.BroadCast.RemoteObject
 			}
 			else
 			{
-                MessageBox.Show("事件未被订阅或订阅发生错误!");
+			    errText += "事件未被订阅或订阅发生错误!";
+                //MessageBox.Show("事件未被订阅或订阅发生错误!");
 			}
+
+		    if (!errText.Equals(""))
+		    {
+		        throw new Exception(errText);
+		    }
+
 		}
 
 		#endregion

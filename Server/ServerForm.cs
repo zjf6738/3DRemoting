@@ -247,6 +247,9 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             }
 
             UpCastObj.UpCastEvent -= OnUpCastEvent;
+            VisUpCastObj.UpCastEvent -= OnVisUpCastEvent;
+            RobotUpCastObj.UpCastEvent -= OnRobotUpCastEvent;
+            MoverUpCastObj.UpCastEvent -= OnMoverUpCastEvent;
 
 	    }
 
@@ -298,7 +301,6 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
                 rcvMsg = commObj.ToString();
 
                 Obj.BroadCastingInfo(msg);
-
             }
 
             new Thread(Check).Start();

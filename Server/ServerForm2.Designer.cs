@@ -1,4 +1,6 @@
-﻿namespace Qzeim.ThrdPrint.BroadCast.Server
+﻿using System.Windows.Forms;
+
+namespace Qzeim.ThrdPrint.BroadCast.Server
 {
     partial class ServerForm2
     {
@@ -45,8 +47,8 @@
             this.系统ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.退出ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.服务端ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.重新启动ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.关闭ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.暂停ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.恢复ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.文本ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.清除收发信息ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.测试ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -158,6 +160,7 @@
             this.txtMessage.Margin = new System.Windows.Forms.Padding(6);
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
+            this.txtMessage.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtMessage.Size = new System.Drawing.Size(527, 419);
             this.txtMessage.TabIndex = 0;
             // 
@@ -221,29 +224,32 @@
             // 退出ToolStripMenuItem
             // 
             this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.退出ToolStripMenuItem.Text = "退出";
+            this.退出ToolStripMenuItem.Click += new System.EventHandler(this.退出ToolStripMenuItem_Click);
             // 
             // 服务端ToolStripMenuItem
             // 
             this.服务端ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.重新启动ToolStripMenuItem,
-            this.关闭ToolStripMenuItem});
+            this.暂停ToolStripMenuItem,
+            this.恢复ToolStripMenuItem});
             this.服务端ToolStripMenuItem.Name = "服务端ToolStripMenuItem";
             this.服务端ToolStripMenuItem.Size = new System.Drawing.Size(56, 21);
             this.服务端ToolStripMenuItem.Text = "服务端";
             // 
-            // 重新启动ToolStripMenuItem
+            // 暂停ToolStripMenuItem
             // 
-            this.重新启动ToolStripMenuItem.Name = "重新启动ToolStripMenuItem";
-            this.重新启动ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.重新启动ToolStripMenuItem.Text = "重新启动";
+            this.暂停ToolStripMenuItem.Name = "暂停ToolStripMenuItem";
+            this.暂停ToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.暂停ToolStripMenuItem.Text = "暂停";
+            this.暂停ToolStripMenuItem.Click += new System.EventHandler(this.暂停ToolStripMenuItem_Click);
             // 
-            // 关闭ToolStripMenuItem
+            // 恢复ToolStripMenuItem
             // 
-            this.关闭ToolStripMenuItem.Name = "关闭ToolStripMenuItem";
-            this.关闭ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.关闭ToolStripMenuItem.Text = "关闭";
+            this.恢复ToolStripMenuItem.Name = "恢复ToolStripMenuItem";
+            this.恢复ToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.恢复ToolStripMenuItem.Text = "恢复";
+            this.恢复ToolStripMenuItem.Click += new System.EventHandler(this.恢复ToolStripMenuItem_Click);
             // 
             // 文本ToolStripMenuItem
             // 
@@ -258,6 +264,7 @@
             this.清除收发信息ToolStripMenuItem.Name = "清除收发信息ToolStripMenuItem";
             this.清除收发信息ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.清除收发信息ToolStripMenuItem.Text = "清除收发信息";
+            this.清除收发信息ToolStripMenuItem.Click += new System.EventHandler(this.清除收发信息ToolStripMenuItem_Click);
             // 
             // 测试ToolStripMenuItem
             // 
@@ -391,8 +398,8 @@
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 服务端ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 重新启动ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 关闭ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 暂停ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 恢复ToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripMenuItem 系统ToolStripMenuItem;
@@ -406,5 +413,18 @@
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.ToolStripMenuItem 测试ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 广播ToolStripMenuItem;
+
+        public TextBox TxtMessage
+        {
+            get { return txtMessage; }
+            set { txtMessage = value; }
+        }
+
+        public PropertyGrid PropertyGrid1
+        {
+            get { return propertyGrid1; }
+            set { propertyGrid1 = value; }
+        }
+
     }
 }

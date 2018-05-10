@@ -175,7 +175,7 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 //			ChannelServices.RegisterChannel(channel);
 //			
 //			bc = (IBroadCast)Activator.GetObject(
-//				typeof(IBroadCast),"http://localhost:8080/BroadCastMessage.soap");
+//				typeof(IBroadCast),"http://localhost:8080/OnBroadCastMessage.soap");
 
 			#endregion
 		

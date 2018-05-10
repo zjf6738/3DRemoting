@@ -1,4 +1,6 @@
-﻿namespace CameraCapture
+﻿using System.Windows.Forms;
+
+namespace CameraCapture
 {
     partial class CameraCapture2
     {
@@ -52,6 +54,7 @@
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.cameraSettingButton = new System.Windows.Forms.Button();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -91,6 +94,7 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.recordButton);
             this.splitContainer1.Panel1.Controls.Add(this.captureButton);
+            this.splitContainer1.Panel1.Controls.Add(this.cameraSettingButton);
             this.splitContainer1.Panel1.Controls.Add(this.commTestButton);
             this.splitContainer1.Panel1.Controls.Add(this.snapButton);
             // 
@@ -103,7 +107,7 @@
             // 
             // recordButton
             // 
-            this.recordButton.Location = new System.Drawing.Point(424, 12);
+            this.recordButton.Location = new System.Drawing.Point(314, 12);
             this.recordButton.Name = "recordButton";
             this.recordButton.Size = new System.Drawing.Size(75, 23);
             this.recordButton.TabIndex = 1;
@@ -123,7 +127,7 @@
             // 
             // commTestButton
             // 
-            this.commTestButton.Location = new System.Drawing.Point(543, 12);
+            this.commTestButton.Location = new System.Drawing.Point(586, 12);
             this.commTestButton.Name = "commTestButton";
             this.commTestButton.Size = new System.Drawing.Size(75, 23);
             this.commTestButton.TabIndex = 0;
@@ -133,7 +137,7 @@
             // 
             // snapButton
             // 
-            this.snapButton.Location = new System.Drawing.Point(323, 12);
+            this.snapButton.Location = new System.Drawing.Point(213, 12);
             this.snapButton.Name = "snapButton";
             this.snapButton.Size = new System.Drawing.Size(75, 23);
             this.snapButton.TabIndex = 0;
@@ -372,6 +376,16 @@
             this.timer1.Interval = 500;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // cameraSettingButton
+            // 
+            this.cameraSettingButton.Location = new System.Drawing.Point(481, 12);
+            this.cameraSettingButton.Name = "cameraSettingButton";
+            this.cameraSettingButton.Size = new System.Drawing.Size(75, 23);
+            this.cameraSettingButton.TabIndex = 0;
+            this.cameraSettingButton.Text = "相机设置";
+            this.cameraSettingButton.UseVisualStyleBackColor = true;
+            this.cameraSettingButton.Click += new System.EventHandler(this.cameraSettingButton_Click);
+            // 
             // CameraCapture2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -442,8 +456,31 @@
         private System.Windows.Forms.Button captureButton;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button commTestButton;
+        private Button cameraSettingButton;
 
+        public Emgu.CV.UI.ImageBox ImageBox0
+        {
+            get { return imageBox0; }
+            set { imageBox0 = value; }
+        }
 
+        public Emgu.CV.UI.ImageBox ImageBox1
+        {
+            get { return imageBox1; }
+            set { imageBox1 = value; }
+        }
+
+        public Emgu.CV.UI.ImageBox ImageBox2
+        {
+            get { return imageBox2; }
+            set { imageBox2 = value; }
+        }
+
+        public Emgu.CV.UI.ImageBox ImageBox3
+        {
+            get { return imageBox3; }
+            set { imageBox3 = value; }
+        }
 
     }
 }

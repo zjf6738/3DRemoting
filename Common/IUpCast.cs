@@ -8,4 +8,11 @@ namespace Qzeim.ThrdPrint.BroadCast.Common
     {
         void SendMsg(string msg);
     }
+
+    public interface IUpCastHandler
+    {
+        void OnVisUpCastEvent(string info);
+        void OnRobotUpCastEvent(string info);
+        void OnMoverUpCastEvent(string info);
+    }
 }
