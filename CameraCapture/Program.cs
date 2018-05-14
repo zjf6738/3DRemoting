@@ -23,9 +23,11 @@ namespace CameraCapture
 
          //Form frm = new CameraCapture();
          //Form frm = new VideoRecord();
-         Form frm = new CameraCapture2();
+         //Form frm = new CameraCapture2();
+         Form frm = new CameraCapture3();
 
-         Application.Run(frm);
+
+          Application.Run(frm);
       }
    }
 }

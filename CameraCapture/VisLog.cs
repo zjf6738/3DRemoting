@@ -8,7 +8,7 @@ using log4net;
 namespace CameraCapture
 {
     [assembly: log4net.Config.XmlConfigurator(Watch = true)]
-    public class VisLog:CameraCapture2MethodHandler
+    public class VisLog:CameraCapture3MethodHandler
     {
         private ILog log = null;
         private string logInfo = "";

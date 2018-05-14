@@ -96,11 +96,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CameraCapture2.cs">
+    <Compile Include="CameraCapture3.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CameraCapture2.Designer.cs">
-      <DependentUpon>CameraCapture2.cs</DependentUpon>
+    <Compile Include="CameraCapture3.Designer.cs">
+      <DependentUpon>CameraCapture3.cs</DependentUpon>
     </Compile>
     <Compile Include="VideoRecord.cs">
       <SubType>Form</SubType>
@@ -119,8 +119,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisComm.cs" />
     <Compile Include="VisLog.cs" />
-    <EmbeddedResource Include="CameraCapture2.resx">
-      <DependentUpon>CameraCapture2.cs</DependentUpon>
+    <EmbeddedResource Include="CameraCapture3.resx">
+      <DependentUpon>CameraCapture3.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VideoRecord.resx">
       <DependentUpon>VideoRecord.cs</DependentUpon>
