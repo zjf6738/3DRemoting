@@ -34,7 +34,6 @@ namespace CameraCapture
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.recordButton = new System.Windows.Forms.Button();
             this.captureButton = new System.Windows.Forms.Button();
-            this.camera1SettingButton = new System.Windows.Forms.Button();
             this.commTestButton = new System.Windows.Forms.Button();
             this.snapButton = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -42,22 +41,23 @@ namespace CameraCapture
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.splitContainer7 = new System.Windows.Forms.SplitContainer();
             this.label4 = new System.Windows.Forms.Label();
+            this.camera4SettingButton = new System.Windows.Forms.Button();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.label3 = new System.Windows.Forms.Label();
+            this.camera3SettingButton = new System.Windows.Forms.Button();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.label2 = new System.Windows.Forms.Label();
+            this.camera2SettingButton = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.label1 = new System.Windows.Forms.Label();
+            this.camera1SettingButton = new System.Windows.Forms.Button();
             this.pictureBox0 = new System.Windows.Forms.PictureBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.camera2SettingButton = new System.Windows.Forms.Button();
-            this.camera3SettingButton = new System.Windows.Forms.Button();
-            this.camera4SettingButton = new System.Windows.Forms.Button();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -126,17 +126,6 @@ namespace CameraCapture
             this.captureButton.Text = "开始采集";
             this.captureButton.UseVisualStyleBackColor = true;
             this.captureButton.Click += new System.EventHandler(this.captureButton_Click);
-            // 
-            // camera1SettingButton
-            // 
-            this.camera1SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.camera1SettingButton.Location = new System.Drawing.Point(275, 2);
-            this.camera1SettingButton.Name = "camera1SettingButton";
-            this.camera1SettingButton.Size = new System.Drawing.Size(58, 23);
-            this.camera1SettingButton.TabIndex = 0;
-            this.camera1SettingButton.Text = "设置";
-            this.camera1SettingButton.UseVisualStyleBackColor = false;
-            this.camera1SettingButton.Click += new System.EventHandler(this.camera1SettingButton_Click);
             // 
             // commTestButton
             // 
@@ -240,6 +229,17 @@ namespace CameraCapture
             this.label4.TabIndex = 6;
             this.label4.Text = "相机4";
             // 
+            // camera4SettingButton
+            // 
+            this.camera4SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.camera4SettingButton.Location = new System.Drawing.Point(275, 1);
+            this.camera4SettingButton.Name = "camera4SettingButton";
+            this.camera4SettingButton.Size = new System.Drawing.Size(58, 23);
+            this.camera4SettingButton.TabIndex = 0;
+            this.camera4SettingButton.Text = "设置";
+            this.camera4SettingButton.UseVisualStyleBackColor = false;
+            this.camera4SettingButton.Click += new System.EventHandler(this.camera4SettingButton_Click);
+            // 
             // pictureBox3
             // 
             this.pictureBox3.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
@@ -279,6 +279,18 @@ namespace CameraCapture
             this.label3.Size = new System.Drawing.Size(35, 12);
             this.label3.TabIndex = 6;
             this.label3.Text = "相机3";
+            // 
+            // camera3SettingButton
+            // 
+            this.camera3SettingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.camera3SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.camera3SettingButton.Location = new System.Drawing.Point(275, 3);
+            this.camera3SettingButton.Name = "camera3SettingButton";
+            this.camera3SettingButton.Size = new System.Drawing.Size(58, 23);
+            this.camera3SettingButton.TabIndex = 0;
+            this.camera3SettingButton.Text = "设置";
+            this.camera3SettingButton.UseVisualStyleBackColor = false;
+            this.camera3SettingButton.Click += new System.EventHandler(this.camera3SettingButton_Click);
             // 
             // pictureBox2
             // 
@@ -320,6 +332,18 @@ namespace CameraCapture
             this.label2.TabIndex = 5;
             this.label2.Text = "相机2";
             // 
+            // camera2SettingButton
+            // 
+            this.camera2SettingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.camera2SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.camera2SettingButton.Location = new System.Drawing.Point(275, 3);
+            this.camera2SettingButton.Name = "camera2SettingButton";
+            this.camera2SettingButton.Size = new System.Drawing.Size(58, 23);
+            this.camera2SettingButton.TabIndex = 0;
+            this.camera2SettingButton.Text = "设置";
+            this.camera2SettingButton.UseVisualStyleBackColor = false;
+            this.camera2SettingButton.Click += new System.EventHandler(this.camera2SettingButton_Click);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
@@ -360,6 +384,18 @@ namespace CameraCapture
             this.label1.TabIndex = 5;
             this.label1.Text = "相机1";
             // 
+            // camera1SettingButton
+            // 
+            this.camera1SettingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.camera1SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.camera1SettingButton.Location = new System.Drawing.Point(275, 2);
+            this.camera1SettingButton.Name = "camera1SettingButton";
+            this.camera1SettingButton.Size = new System.Drawing.Size(58, 23);
+            this.camera1SettingButton.TabIndex = 0;
+            this.camera1SettingButton.Text = "设置";
+            this.camera1SettingButton.UseVisualStyleBackColor = false;
+            this.camera1SettingButton.Click += new System.EventHandler(this.camera1SettingButton_Click);
+            // 
             // pictureBox0
             // 
             this.pictureBox0.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
@@ -391,41 +427,8 @@ namespace CameraCapture
             // 
             // timer1
             // 
-            this.timer1.Interval = 500;
+            this.timer1.Enabled = true;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // camera2SettingButton
-            // 
-            this.camera2SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.camera2SettingButton.Location = new System.Drawing.Point(275, 3);
-            this.camera2SettingButton.Name = "camera2SettingButton";
-            this.camera2SettingButton.Size = new System.Drawing.Size(58, 23);
-            this.camera2SettingButton.TabIndex = 0;
-            this.camera2SettingButton.Text = "设置";
-            this.camera2SettingButton.UseVisualStyleBackColor = false;
-            this.camera2SettingButton.Click += new System.EventHandler(this.camera2SettingButton_Click);
-            // 
-            // camera3SettingButton
-            // 
-            this.camera3SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.camera3SettingButton.Location = new System.Drawing.Point(275, 3);
-            this.camera3SettingButton.Name = "camera3SettingButton";
-            this.camera3SettingButton.Size = new System.Drawing.Size(58, 23);
-            this.camera3SettingButton.TabIndex = 0;
-            this.camera3SettingButton.Text = "设置";
-            this.camera3SettingButton.UseVisualStyleBackColor = false;
-            this.camera3SettingButton.Click += new System.EventHandler(this.camera3SettingButton_Click);
-            // 
-            // camera4SettingButton
-            // 
-            this.camera4SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.camera4SettingButton.Location = new System.Drawing.Point(275, 1);
-            this.camera4SettingButton.Name = "camera4SettingButton";
-            this.camera4SettingButton.Size = new System.Drawing.Size(58, 23);
-            this.camera4SettingButton.TabIndex = 0;
-            this.camera4SettingButton.Text = "设置";
-            this.camera4SettingButton.UseVisualStyleBackColor = false;
-            this.camera4SettingButton.Click += new System.EventHandler(this.camera4SettingButton_Click);
             // 
             // CameraCapture3
             // 

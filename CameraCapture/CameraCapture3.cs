@@ -23,6 +23,7 @@ using MVSDK;
 using CameraHandle = System.Int32;
 using MvApi = MVSDK.MvApi;
 using Newtonsoft.Json;
+using ZedGraph;
 
 namespace CameraCapture
 {
@@ -127,6 +128,7 @@ namespace CameraCapture
             {
                 theVisMindVision.CameraGrabberFrameCallback0(Grabber, pFrameBuffer, ref pFrameHead, Context);
                 methodHandlerComposite.OnProcessFrame0("");
+                this.propertyGrid1.Refresh();
             }
             catch (Exception ex)
             {
@@ -140,6 +142,7 @@ namespace CameraCapture
             {
                 theVisMindVision.CameraGrabberFrameCallback1(Grabber, pFrameBuffer, ref pFrameHead, Context);
                 methodHandlerComposite.OnProcessFrame1("");
+                this.propertyGrid1.Refresh();
             }
             catch (Exception ex)
             {
@@ -153,6 +156,7 @@ namespace CameraCapture
             {
                 theVisMindVision.CameraGrabberFrameCallback2(Grabber, pFrameBuffer, ref pFrameHead, Context);
                 methodHandlerComposite.OnProcessFrame2("");
+                this.propertyGrid1.Refresh();
             }
             catch (Exception ex)
             {
@@ -166,6 +170,7 @@ namespace CameraCapture
             {
                 theVisMindVision.CameraGrabberFrameCallback3(Grabber, pFrameBuffer, ref pFrameHead, Context);
                 methodHandlerComposite.OnProcessFrame3("");
+                this.propertyGrid1.Refresh();
             }
             catch (Exception ex)
             {
@@ -216,22 +221,31 @@ namespace CameraCapture
         // 定时发送消息到服务端
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (allTimerCount % 20 == 0) { this.timer1.Enabled = false; }
+            if (allTimerCount % 500 == 0) { this.timer1.Enabled = false; }
             allTimerCount++;
 
+            Point pt1 = theVisMindVision.TheCapturedPoints.LastPoints1;
+            Point pt2 = theVisMindVision.TheCapturedPoints.LastPoints2;
+            Point pt3 = theVisMindVision.TheCapturedPoints.LastPoints3;
+            Point pt4 = theVisMindVision.TheCapturedPoints.LastPoints4;
 
-            PLCControlObj obj = new PLCControlObj(0, 500, 0, 0, 0, 0, 0, 0);
+            
 
-            CommObj commObj = new CommObj();
-            commObj.SrcId = 0x10;
-            commObj.DestId = 0x30;
-            commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            commObj.DataType = "PLCControlObj";
-            commObj.DataCmd = "";
-            commObj.DataBody = PLCControlObj.ToByteJson(obj);
+            //theVisMindVision.SetAllRoi(allTimerCount,allTimerCount,100,100,0xff);
 
-            string json = CommObj.ToJson(commObj);
-            visComm.SendToServer(json);
+
+            //PLCControlObj obj = new PLCControlObj(0, 500, 0, 0, 0, 0, 0, 0);
+
+            //CommObj commObj = new CommObj();
+            //commObj.SrcId = 0x10;
+            //commObj.DestId = 0x30;
+            //commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            //commObj.DataType = "PLCControlObj";
+            //commObj.DataCmd = "";
+            //commObj.DataBody = PLCControlObj.ToByteJson(obj);
+
+            //string json = CommObj.ToJson(commObj);
+            //visComm.SendToServer(json);
 
             // visComm.SendToServer(json);
             // visLog.DisplaySendToServerInfo(json);
@@ -347,11 +361,13 @@ namespace CameraCapture
             textBox1.SelectionStart = TextBox1.TextLength;
             textBox1.ScrollToCaret();
 
+            this.propertyGrid1.Refresh();
+
             //ImageBox0.Update();
             //ImageBox1.Update();
             //ImageBox2.Update();
             //ImageBox3.Update();
-            Refresh();
+            //Refresh();
 
         }
 
@@ -465,16 +481,44 @@ namespace CameraCapture
             set { times1 = value; }
         }
 
+        public DateTime LastTimes1 
+        {
+            get
+            {
+                if (times1.Count == 0) return DateTime.Now;
+                return times1[times1.Count-1];
+            }
+        }
+
         public List<Point> Points1
         {
             get { return points1; }
             set { points1 = value; }
         }
 
+        public Point LastPoints1
+        {
+            get
+            {
+                if (points1.Count == 0) return new Point(0,0);
+                return points1[points1.Count - 1];
+            }
+        }
+
+
         public List<DateTime> Times2
         {
             get { return times2; }
             set { times2 = value; }
+        }
+
+        public DateTime LastTimes2
+        {
+            get
+            {
+                if (times2.Count == 0) return DateTime.Now;
+                return times2[times2.Count - 1];
+            }
         }
 
         public List<Point> Points2
@@ -483,10 +527,28 @@ namespace CameraCapture
             set { points2 = value; }
         }
 
+        public Point LastPoints2
+        {
+            get
+            {
+                if (points2.Count == 0) return new Point(0, 0);
+                return points2[points2.Count - 1];
+            }
+        }
+
         public List<DateTime> Times3
         {
             get { return times3; }
             set { times3 = value; }
+        }
+
+        public DateTime LastTimes3
+        {
+            get
+            {
+                if (times3.Count == 0) return DateTime.Now;
+                return times3[times3.Count - 1];
+            }
         }
 
         public List<Point> Points3
@@ -495,10 +557,28 @@ namespace CameraCapture
             set { points3 = value; }
         }
 
+        public Point LastPoints3
+        {
+            get
+            {
+                if (points3.Count == 0) return new Point(0, 0);
+                return points3[points3.Count - 1];
+            }
+        }
+
         public List<DateTime> Times4
         {
             get { return times4; }
             set { times4 = value; }
+        }
+
+        public DateTime LastTimes4
+        {
+            get
+            {
+                if (times4.Count == 0) return DateTime.Now;
+                return times4[times4.Count - 1];
+            }
         }
 
         public List<Point> Points4
@@ -506,6 +586,16 @@ namespace CameraCapture
             get { return points4; }
             set { points4 = value; }
         }
+
+        public Point LastPoints4
+        {
+            get
+            {
+                if (points4.Count == 0) return new Point(0, 0);
+                return points4[points4.Count - 1];
+            }
+        }
+
     }
 
 
@@ -658,6 +748,15 @@ namespace CameraCapture
                         MvApi.CameraGetCapability(m_hCamera[i], out cap);
                         if (cap.sIspCapacity.bMonoSensor != 0) MvApi.CameraSetIspOutFormat(m_hCamera[i], (uint)MVSDK.emImageFormat.CAMERA_MEDIA_TYPE_MONO8);
 
+                        // 设置帧率
+                        MvApi.CameraSetFrameSpeed(m_hCamera[i], 60);
+
+                        tSdkImageResolution t;
+                        MvApi.CameraGetImageResolution(m_hCamera[i], out t);
+                        t.iIndex = 0xff;
+                        MvApi.CameraSetImageResolution(m_hCamera[i], ref t);
+
+
                         // 关联图像显示窗口
                         MvApi.CameraGrabber_SetHWnd(m_Grabber[i], hDispWnds[i]);
                     }
@@ -733,17 +832,26 @@ namespace CameraCapture
             frame[0] = MvFrameBufferToCvMat(pFrameBuffer, ref pFrameHead);
             
             // 调用相关函数进行处理
-            CvInvoke.Invert(frame[0], frame[0], DecompMethod.Svd);
+            //CvInvoke.Invert(frame[0], frame[0], DecompMethod.Svd);
 
             // 获取坐标点
             Point pt = new Point((new Random()).Next(1, 512), (new Random()).Next(1, 512));
             theCapturedPoints.Points1.Add(pt);
             theCapturedPoints.Times1.Add(DateTime.Now);
 
+            Debug.Print("Point1：{0:D4}-{1:D3}-{2:D3}.Time1：{3}", theCapturedPoints.Points1.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+
             // 更新图像
-            frm.ImageBox0.Image = (Image)frame[0].Bitmap;
+            //frm.ImageBox0.Image = (Image)frame[0].Bitmap;
 
+            // 更新ROI区域
+            //CameraSdkStatus status = MvApi.CameraEnableTransferRoi(m_hCamera[0], 1);
+            //status = MvApi.CameraSetTransferRoi(m_hCamera[0], 0, 1000, 1000, 2000, 2000);
 
+            //SetRoi(500, 500, 1050, 1500, 0xff, m_hCamera[0]);
+
+            //tSdkImageResolution resolution1 = new tSdkImageResolution();
+            //status = MvApi.CameraGetImageResolution(m_hCamera[0], out resolution1);
 
             // 处于视频录制状态
             if (videoInProgress && vw[0]!=null)
@@ -753,10 +861,76 @@ namespace CameraCapture
             }
         }
 
+        private int even = 0;
+        public void SetAllRoi(int x1,int y1, int x2, int y2, int index)
+        {
+            for (int i = 0; i < NumberOfAvailableCamera; i++)
+            {
+                // MvApi.CameraGrabber_SetRGBCallback(m_Grabber[i], null, IntPtr.Zero);
+
+
+                //SetRoi(x1, y1, x2, y2, 0xff, m_hCamera[i]);
+
+                switch (even)
+                {
+                    case 0:
+                        SetRoi(1, 1, 1000, 1000, 0xff, m_hCamera[i]);
+                        break;
+                    case 1:
+                        SetRoi(101, 101, 1000, 1000, 0xff, m_hCamera[i]);
+                        break;
+                    case 2:
+                        SetRoi(201, 201, 1000, 1000, 0xff, m_hCamera[i]);
+                        break;
+                    case 3:
+                        SetRoi(301, 301, 1000, 1000, 0xff, m_hCamera[i]);
+                        break;
+                    default:
+                        SetRoi(401, 401, 1000, 1000, 0xff, m_hCamera[i]);
+                        break;
+
+
+                }
+
+               
+                //SetRoi(x1,y1,x2,y2,0xff,m_hCamera[i]);
+
+                // MvApi.CameraGrabber_SetRGBCallback(m_Grabber[i], m_FrameCallback[i], IntPtr.Zero);
+            }
+
+            even = (even++ % 2);
+
+            //Thread.Sleep(10);
+        }
+
+        private void SetRoi(int x1,int y1, int x2, int y2, int index,int hcamera)
+        {
+            tSdkImageResolution resolution = new tSdkImageResolution();
+            resolution.iHeight = y2 - y1;
+            resolution.iHeightFOV = y2 - y1;
+            resolution.iVOffsetFOV = y1;
+
+            resolution.iHOffsetFOV = x1;
+            resolution.iWidth = x2 - x1;
+            resolution.iWidthFOV = x2 - x1;
+            
+            resolution.iIndex = index;
+
+            CameraSdkStatus status = MvApi.CameraSetImageResolution(hcamera, ref resolution);
+        }
+
         public void CameraGrabberFrameCallback1(IntPtr Grabber,IntPtr pFrameBuffer,ref tSdkFrameHead pFrameHead,IntPtr Context)
         {
             frame[1] = MvFrameBufferToCvMat(pFrameBuffer, ref pFrameHead);
 
+            // 获取坐标点
+            Point pt = new Point((new Random()).Next(1, 512), (new Random()).Next(1, 512));
+            theCapturedPoints.Points2.Add(pt);
+            theCapturedPoints.Times2.Add(DateTime.Now);
+
+            Debug.Print("Point2：{0:D4}-{1:D3}-{2:D3}.Time2：{3}", theCapturedPoints.Points2.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+
+            //SetRoi(500, 500, 1000, 1000, 0xff, m_hCamera[1]);
 
             if (videoInProgress && vw[1] != null)
             {
@@ -768,6 +942,15 @@ namespace CameraCapture
         {
             frame[2] = MvFrameBufferToCvMat(pFrameBuffer, ref pFrameHead);
 
+            // 获取坐标点
+            Point pt = new Point((new Random()).Next(1, 512), (new Random()).Next(1, 512));
+            theCapturedPoints.Points3.Add(pt);
+            theCapturedPoints.Times3.Add(DateTime.Now);
+
+            Debug.Print("Point3：{0:D4}-{1:D3}-{2:D3}.Time3：{3}", theCapturedPoints.Points3.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+
+            //SetRoi(500, 500, 1500, 1500, 0xff, m_hCamera[2]);
+
             if (videoInProgress && vw[2] != null)
             {
                 //MvApi.CameraPushFrame(m_hCamera[2], pFrameBuffer, ref pFrameHead);
@@ -778,6 +961,16 @@ namespace CameraCapture
         public void CameraGrabberFrameCallback3(IntPtr Grabber,IntPtr pFrameBuffer,ref tSdkFrameHead pFrameHead,IntPtr Context)
         {
             frame[3] = MvFrameBufferToCvMat(pFrameBuffer, ref pFrameHead);
+
+            // 获取坐标点
+            Point pt = new Point((new Random()).Next(1, 512), (new Random()).Next(1, 512));
+            theCapturedPoints.Points4.Add(pt);
+            theCapturedPoints.Times4.Add(DateTime.Now);
+
+            Debug.Print("Point4：{0:D4}-{1:D3}-{2:D3}.Time4：{3}", theCapturedPoints.Points4.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+
+
+            //SetRoi(500, 500, 1500, 1500, 0xff, m_hCamera[3]);
 
             if (videoInProgress && vw[3] != null)
             {
@@ -1399,10 +1592,10 @@ namespace CameraCapture
         public override void OnBroadCastMessage(string msg) { log.Info(String.Format(BroadCastMessageFmt, msg)); }
         public override void OnUpCastEvent(string msg) { log.Info(String.Format(VisUpCastMessageFmt, msg)); }
         public override void OnClearText() {  }
-        public override void OnProcessFrame0(string msg) { log.Info(String.Format(ProcessFrameMessageFmt, 0,msg));}
-        public override void OnProcessFrame1(string msg) {log.Info(String.Format(ProcessFrameMessageFmt, 1,msg)); }
-        public override void OnProcessFrame2(string msg) {log.Info(String.Format(ProcessFrameMessageFmt, 2,msg)); }
-        public override void OnProcessFrame3(string msg) { log.Info(String.Format(ProcessFrameMessageFmt, 3,msg));}
+        //public override void OnProcessFrame0(string msg) { log.Info(String.Format(ProcessFrameMessageFmt, 0,msg));}
+        //public override void OnProcessFrame1(string msg) {log.Info(String.Format(ProcessFrameMessageFmt, 1,msg)); }
+        //public override void OnProcessFrame2(string msg) {log.Info(String.Format(ProcessFrameMessageFmt, 2,msg)); }
+        //public override void OnProcessFrame3(string msg) { log.Info(String.Format(ProcessFrameMessageFmt, 3,msg));}
 
         public override void OnSaveFrame0(string msg) { log.Info(String.Format(SaveFrameMessageFmt, 0, msg)); }
         public override void OnSaveFrame1(string msg) { log.Info(String.Format(SaveFrameMessageFmt, 1, msg)); }
