@@ -231,6 +231,7 @@ namespace CameraCapture
             // 
             // camera4SettingButton
             // 
+            this.camera4SettingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.camera4SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.camera4SettingButton.Location = new System.Drawing.Point(275, 1);
             this.camera4SettingButton.Name = "camera4SettingButton";

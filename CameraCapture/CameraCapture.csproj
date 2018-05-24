@@ -102,6 +102,8 @@
     <Compile Include="CameraCapture3.Designer.cs">
       <DependentUpon>CameraCapture3.cs</DependentUpon>
     </Compile>
+    <Compile Include="EndPointDectector.cs" />
+    <Compile Include="Utility.cs" />
     <Compile Include="VideoRecord.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,6 +120,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisComm.cs" />
+    <Compile Include="VisEmguVision3.cs" />
     <Compile Include="VisLog.cs" />
     <EmbeddedResource Include="CameraCapture3.resx">
       <DependentUpon>CameraCapture3.cs</DependentUpon>

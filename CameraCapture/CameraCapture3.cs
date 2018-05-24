@@ -27,13 +27,11 @@ using ZedGraph;
 
 namespace CameraCapture
 {
-   
     [assembly: log4net.Config.XmlConfigurator(Watch = true)]
     public partial class CameraCapture3 : Form, IBroadCastHandler
     {
 
         // 视觉模块
-        // private VisEmguVision3 theVisEmguVision; // opencv视觉系统
         private VisMindVision3 theVisMindVision = null; // 迈德威视视觉系统
 
         // 通信模块
@@ -44,7 +42,6 @@ namespace CameraCapture
         private CameraCapture3Log visLog = null;
         // UI更新
         private CameraCapture3UI visUI = null;
-
         // 方法响应函数对象
         CameraCapture3MethodHandlerComposite methodHandlerComposite = null;
 
@@ -66,7 +63,6 @@ namespace CameraCapture
             visUI = new CameraCapture3UI(this);
 
             // 视觉
-            //theVisEmguVision = new VisEmguVision3(this);
             theVisMindVision = new VisMindVision3(this);
 
             methodHandlerComposite = new CameraCapture3MethodHandlerComposite();
@@ -86,12 +82,20 @@ namespace CameraCapture
             set { theVisMindVision = value; }
         }
 
+        /// <summary>
+        /// 视觉系统初始化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CameraCapture3_Load(object sender, EventArgs e)
         {
             try
             {
+                // 初始化视觉系统
                 theVisMindVision.Start();
+                // 初始化通信系统
                 visComm.StartClient();
+                // 日志、UI、监控更新
                 methodHandlerComposite.OnStartClient();
                 //UpdateControls();
             }
@@ -102,6 +106,11 @@ namespace CameraCapture
 
         }
 
+        /// <summary>
+        /// 结束视觉系统
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CameraCapture3_FormClosing(object sender, FormClosingEventArgs e)
         {
             try
@@ -120,8 +129,24 @@ namespace CameraCapture
 
         #endregion
 
+        #region 视觉处理模块
+        // 这个代码段主要进行视觉处理。
+        // 其中，CameraGrabberFrameCallback0~3由theVisMindVision中的采集卡对象m_Grabber进行关联。
+        // 之所以在Frame中再增加这几个函数，是为了能够对每帧处理情况进行日志、监控以及UI相关操作。
+        // 相机单帧图像的处理主要包括两个方面：目标检测以及三维点重建。
+        // 目标检测对每帧图像调用Detect函数，返回一个二维坐标，这部分在theVisMindVision内完成。
+        // 在调用Detect函数的过程中，需要一个Project函数由机械手设置的顶点获取图像定位点。
+        // 三维点重建需要综合几个顶点进行，有ReconstructFromPoints来实现，这部分放到OnTimer里头。
 
-        #region 视觉模块
+        /// <summary>
+        /// 处理第0号相机。
+        /// 每一帧图像的处理将会返回一个带有时间的顶点，这个顶点保存在视觉模块中的CapturePoints里头。
+        /// 后续的1~3号相机同上。
+        /// </summary>
+        /// <param name="Grabber"></param>
+        /// <param name="pFrameBuffer"></param>
+        /// <param name="pFrameHead"></param>
+        /// <param name="Context"></param>
         public void CameraGrabberFrameCallback0(IntPtr Grabber, IntPtr pFrameBuffer, ref tSdkFrameHead pFrameHead, IntPtr Context)
         {
             try
@@ -136,6 +161,7 @@ namespace CameraCapture
             }
         }
 
+        // 处理第1个相机
         public void CameraGrabberFrameCallback1(IntPtr Grabber, IntPtr pFrameBuffer, ref tSdkFrameHead pFrameHead, IntPtr Context)
         {
             try
@@ -150,6 +176,7 @@ namespace CameraCapture
             }
         }
 
+        // 处理第2个相机
         public void CameraGrabberFrameCallback2(IntPtr Grabber, IntPtr pFrameBuffer, ref tSdkFrameHead pFrameHead, IntPtr Context)
         {
             try
@@ -164,6 +191,7 @@ namespace CameraCapture
             }
         }
 
+        // 处理第3个相机
         public void CameraGrabberFrameCallback3(IntPtr Grabber, IntPtr pFrameBuffer, ref tSdkFrameHead pFrameHead, IntPtr Context)
         {
             try
@@ -176,86 +204,9 @@ namespace CameraCapture
             {
                 methodHandlerComposite.OnException("CameraGrabberFrameCallback3", ex.Message);
             }
-        } 
-        #endregion
-
-
-        #region 通信部分
-
-        public void OnBroadCastingInfo(string message)
-        {
-
-            try
-            {
-                CommObj commObj = CommObj.FromJson(message);
-
-                if (commObj == null)
-                {
-                    visComm.RcvMsg = "Json解析错误";
-                }
-                else
-                {
-                    commObj.RcvTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                    visComm.RcvMsg = commObj.ToString();
-                }
-
-                new Thread(Check).Start();
-            }
-            catch (Exception ex)
-            {
-                methodHandlerComposite.OnException("OnBroadCastingInfo", ex.Message);
-            }
-            
-            
         }
 
-        public void Check()
-        {
-            lock (this)
-                Invoke(new MethodInvoker(delegate()
-                {
-                    methodHandlerComposite.OnBroadCastMessage(visComm.RcvMsg);
-                }));
-        }
-
-        // 定时发送消息到服务端
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            if (allTimerCount % 500 == 0) { this.timer1.Enabled = false; }
-            allTimerCount++;
-
-            Point pt1 = theVisMindVision.TheCapturedPoints.LastPoints1;
-            Point pt2 = theVisMindVision.TheCapturedPoints.LastPoints2;
-            Point pt3 = theVisMindVision.TheCapturedPoints.LastPoints3;
-            Point pt4 = theVisMindVision.TheCapturedPoints.LastPoints4;
-
-            
-
-            //theVisMindVision.SetAllRoi(allTimerCount,allTimerCount,100,100,0xff);
-
-
-            //PLCControlObj obj = new PLCControlObj(0, 500, 0, 0, 0, 0, 0, 0);
-
-            //CommObj commObj = new CommObj();
-            //commObj.SrcId = 0x10;
-            //commObj.DestId = 0x30;
-            //commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            //commObj.DataType = "PLCControlObj";
-            //commObj.DataCmd = "";
-            //commObj.DataBody = PLCControlObj.ToByteJson(obj);
-
-            //string json = CommObj.ToJson(commObj);
-            //visComm.SendToServer(json);
-
-            // visComm.SendToServer(json);
-            // visLog.DisplaySendToServerInfo(json);
-
-        }
-
-
-        #endregion
-
-
+        //  采集状态控制，日志、UI、监控需要获取theVisMindVision对象
         private void captureButton_Click(object sender, EventArgs e)
         {
             try
@@ -263,6 +214,7 @@ namespace CameraCapture
                 theVisMindVision.OnCapture();
                 methodHandlerComposite.OnCapture("");
 
+                this.propertyGrid1.Refresh();
                 //UpdateControls();
             }
             catch (Exception ex)
@@ -274,6 +226,7 @@ namespace CameraCapture
 
         }
 
+        //  一键截图，日志、UI、监控需要获取theVisMindVision对象
         private void snapButton_Click(object sender, EventArgs e)
         {
 
@@ -281,6 +234,8 @@ namespace CameraCapture
             {
                 theVisMindVision.OnSnap(-1);
                 methodHandlerComposite.OnSnap("");
+
+                this.propertyGrid1.Refresh();
             }
             catch (Exception ex)
             {
@@ -291,93 +246,20 @@ namespace CameraCapture
 
         }
 
+        //  一键录制，日志、UI、监控需要获取theVisMindVision对象
         private void recordButton_Click(object sender, EventArgs e)
         {
             try
             {
                 theVisMindVision.OnRecord(sender, e);
                 methodHandlerComposite.OnRecord("");
+
+                this.propertyGrid1.Refresh();
             }
             catch (Exception ex)
             {
                 methodHandlerComposite.OnException("recordButton_Click", ex.Message);
             }
-
-        }
-
-        private void commTestButton_Click(object sender, EventArgs e)
-        {
-            this.timer1.Enabled = true;
-        }
-
-        public void CheckCommTestButton()
-        {
-            lock (this)
-                Invoke(new MethodInvoker(delegate()
-                {
-                    PLCControlObj obj = new PLCControlObj(0, 1000, 1, 1000, 1, 1000, 1, 1000);
-
-                    CommObj commObj = new CommObj();
-                    commObj.SrcId = 0x10;
-                    commObj.DestId = 0x30;
-                    commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                    commObj.DataType = "PLCControlObj";
-                    commObj.DataCmd = "";
-                    commObj.DataBody = PLCControlObj.ToByteJson(obj);
-
-                    string json = CommObj.ToJson(commObj);
-
-                    int N = 20;
-
-                    for (int i = 0; i < N; i++)
-                    {
-                        visComm.SendToServer(json);
-                        Thread.Sleep(1000);
-                    }
-                }));
-        }
-
-        public void UpdateControls()
-        {
-            
-            if (theVisMindVision.CaptureInProgress)
-            {
-                captureButton.Text = "停止预览";
-            }
-            else
-            {
-                captureButton.Text = "开始预览";
-            }
-
-            if (theVisMindVision.VideoInProgress)
-            {
-                recordButton.Text = "停止录制";
-            }
-            else
-            {
-                recordButton.Text = "开始录制";
-            }
-
-            textBox1.SelectionStart = TextBox1.TextLength;
-            textBox1.ScrollToCaret();
-
-            this.propertyGrid1.Refresh();
-
-            //ImageBox0.Update();
-            //ImageBox1.Update();
-            //ImageBox2.Update();
-            //ImageBox3.Update();
-            //Refresh();
-
-        }
-
-        public void AppendToTextBox1(string text)
-        {
-            textBox1.AppendText(text);
-        }
-        public void ClearTextBox1()
-        {
-            textBox1.Clear();
         }
 
         private void camera1SettingButton_Click(object sender, EventArgs e)
@@ -432,10 +314,241 @@ namespace CameraCapture
             }
         }
 
+        #endregion
+
+        #region 通信部分
+
+        /// <summary>
+        /// 处理服务器的广播信息
+        /// </summary>
+        /// <param name="message"></param>
+        public void OnBroadCastingInfo(string message)
+        {
+
+            try
+            {
+                CommObj commObj = CommObjFromMessage(message);
+                ProcessCommObj(commObj);
+
+                new Thread(Check).Start();
+            }
+            catch (Exception ex)
+            {
+                methodHandlerComposite.OnException("OnBroadCastingInfo", ex.Message);
+            }
+            
+            
+        }
+
+        private CommObj CommObjFromMessage(string message)
+        {
+            CommObj commObj = CommObj.FromJson(message);
+
+            if (commObj == null)
+            {
+                visComm.RcvMsg = "Json解析错误";
+            }
+            else
+            {
+                commObj.RcvTime = Utility.DateTimeNowFmt1();
+                visComm.RcvMsg = commObj.ToString();
+            }
+
+            return commObj;
+        }
+
+        private void ProcessCommObj(CommObj commObj)
+        {
+            // 不是发送给视觉端，则直接退出
+            if (commObj.DestId != 0x10)
+            {
+                return;
+            }
+
+            // 由机器人系统发送过来
+            if (commObj.SrcId == 0x20)
+            {
+                ProcessRoboticRequest();
+            }
+
+        }
+
+        void ProcessRoboticRequest()
+        {
+            
+        }
+
+
+        public void Check()
+        {
+            lock (this)
+                Invoke(new MethodInvoker(delegate()
+                {
+                    methodHandlerComposite.OnBroadCastMessage(visComm.RcvMsg);
+                }));
+        }
+
+       
+        #endregion
+
+        #region 定时器管理
+
+        // 定时发送消息到服务端
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (allTimerCount % 500 == 0) { this.timer1.Enabled = false; }
+            allTimerCount++;
+
+            Point pt1;
+            Point pt2;
+            Point pt3;
+            Point pt4;
+            GetLatestImageDetectedPoints(out pt1, out pt2, out pt3, out pt4);
+
+            double [] pt3dReconstruct = ReconstructFromImagePoints(pt1,pt2,pt3,pt4);
+            double[] pt3dRobotic = GetLatestRoboticPoints();
+
+            UInt16 xDir, xVal, yDir, yVal, zDir, zVal, rDir, rVal;
+            GeneratePLCParams(pt3dReconstruct,pt3dRobotic, out xDir, out xVal, out yDir, out yVal, out zDir, out zVal, out rDir, out rVal);
+
+
+            PLCControlObj obj = new PLCControlObj(xDir, xVal, yDir, yVal, zDir, zVal, rDir, rVal);
+
+            CommObj commObj = new CommObj();
+            commObj.SrcId = 0x10;
+            commObj.DestId = 0x30;
+            commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            commObj.DataType = "PLCControlObj";
+            commObj.DataCmd = "";
+            commObj.DataBody = PLCControlObj.ToByteJson(obj);
+
+            string json = CommObj.ToJson(commObj);
+            // visComm.SendToServer(json);
+
+            methodHandlerComposite.OnTimer("");
+
+            // visComm.SendToServer(json);
+            // visLog.DisplaySendToServerInfo(json);
+
+        }
+
+        private void GetLatestImageDetectedPoints(out Point pt1, out Point pt2, out Point pt3, out Point pt4)
+        {
+            pt1 = theVisMindVision.TheCapturedPoints.LastPoints1;
+            pt2 = theVisMindVision.TheCapturedPoints.LastPoints2;
+            pt3 = theVisMindVision.TheCapturedPoints.LastPoints3;
+            pt4 = theVisMindVision.TheCapturedPoints.LastPoints4;
+        }
+
+        private double[] ReconstructFromImagePoints(Point pt1, Point pt2, Point pt3, Point pt4)
+        {
+            return new double[3]{0, 0, 0};
+        }
+
+        private double[] GetLatestRoboticPoints()
+        {
+            return new double[3] { 0, 0, 0 };
+        }
+
+        private void GeneratePLCParams(double[] pt3dReconstruct, double[] pt3dRobotic, out UInt16 _xDir, out UInt16 _xVal, out UInt16 _yDir, out UInt16 _yVal, out UInt16 _zDir, out UInt16 _zVal,
+            out UInt16 _rDir, out UInt16 _rVal)
+        {
+            _xDir = 0;
+            _xVal = 0;
+            _yDir = 0;
+            _yVal = 0;
+            _zDir = 0;
+            _zVal = 0;
+            _rDir = 0;
+            _rVal = 0;
+        }
+
+        #endregion
+
+        #region 通信测试
+        private void commTestButton_Click(object sender, EventArgs e)
+        {
+            this.timer1.Enabled = true;
+        }
+
+        public void CheckCommTestButton()
+        {
+            lock (this)
+                Invoke(new MethodInvoker(delegate()
+                {
+                    PLCControlObj obj = new PLCControlObj(0, 1000, 1, 1000, 1, 1000, 1, 1000);
+
+                    CommObj commObj = new CommObj();
+                    commObj.SrcId = 0x10;
+                    commObj.DestId = 0x30;
+                    commObj.SendTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                    commObj.DataType = "PLCControlObj";
+                    commObj.DataCmd = "";
+                    commObj.DataBody = PLCControlObj.ToByteJson(obj);
+
+                    string json = CommObj.ToJson(commObj);
+
+                    int N = 20;
+
+                    for (int i = 0; i < N; i++)
+                    {
+                        visComm.SendToServer(json);
+                        Thread.Sleep(1000);
+                    }
+                }));
+        } 
+        #endregion
+
+        #region 若干UI函数
+        public void UpdateControls()
+        {
+
+            if (theVisMindVision.CaptureInProgress)
+            {
+                captureButton.Text = "停止预览";
+            }
+            else
+            {
+                captureButton.Text = "开始预览";
+            }
+
+            if (theVisMindVision.VideoInProgress)
+            {
+                recordButton.Text = "停止录制";
+            }
+            else
+            {
+                recordButton.Text = "开始录制";
+            }
+
+            textBox1.SelectionStart = TextBox1.TextLength;
+            textBox1.ScrollToCaret();
+
+            this.propertyGrid1.Refresh();
+
+            //ImageBox0.Update();
+            //ImageBox1.Update();
+            //ImageBox2.Update();
+            //ImageBox3.Update();
+            //Refresh();
+
+        }
+
+        public void AppendToTextBox1(string text)
+        {
+            textBox1.AppendText(text);
+            textBox1.AppendText("\r\n");
+        }
+        public void ClearTextBox1()
+        {
+            textBox1.Clear();
+        } 
+        #endregion
+
     }
 
     // 视觉模块
-    public class VisEmguVisionState
+    public class VisVisionState
     {
         public enum StateEnum
         {
@@ -451,11 +564,11 @@ namespace CameraCapture
         {
             switch (state)
             {
-                case (int)global::CameraCapture.VisEmguVisionState.StateEnum.Starting: return "开始状态";
-                case (int)global::CameraCapture.VisEmguVisionState.StateEnum.Capturing: return "采集状态";
-                case (int)global::CameraCapture.VisEmguVisionState.StateEnum.Recording: return "录制状态";
-                case (int)global::CameraCapture.VisEmguVisionState.StateEnum.Abnormal: return "异常状态";
-                case (int)global::CameraCapture.VisEmguVisionState.StateEnum.Finished: return "结束状态";
+                case (int)global::CameraCapture.VisVisionState.StateEnum.Starting: return "开始状态";
+                case (int)global::CameraCapture.VisVisionState.StateEnum.Capturing: return "采集状态";
+                case (int)global::CameraCapture.VisVisionState.StateEnum.Recording: return "录制状态";
+                case (int)global::CameraCapture.VisVisionState.StateEnum.Abnormal: return "异常状态";
+                case (int)global::CameraCapture.VisVisionState.StateEnum.Finished: return "结束状态";
                 default: return "未知状态";
             }
         }
@@ -645,7 +758,7 @@ namespace CameraCapture
         // 当前的工作相机个数
         private int numberOfAvailableCamera = 0;
         // 当前视觉系统的工作状态
-        private VisEmguVisionState visEmguState = new VisEmguVisionState(); 
+        private VisVisionState visState = new VisVisionState(); 
         // 当前采集的数据点
         CapturedPoints theCapturedPoints = new CapturedPoints();
         #endregion
@@ -681,10 +794,10 @@ namespace CameraCapture
             set { numberOfAvailableCamera = value; }
         }
 
-        public VisEmguVisionState VisEmguState
+        public VisVisionState VisState
         {
-            get { return visEmguState; }
-            set { visEmguState = value; }
+            get { return visState; }
+            set { visState = value; }
         }
 
         public CapturedPoints TheCapturedPoints
@@ -724,7 +837,7 @@ namespace CameraCapture
                 
                 if (NumDev != CAMERA_NUM)
                 {
-                    visEmguState.SetState((int)VisEmguVisionState.StateEnum.Abnormal);
+                    visState.SetState((int)VisVisionState.StateEnum.Abnormal);
                     throw new Exception("相机设备不足.可用的相机数量应为：4,这里的可用相机数量为：" + NumDev.ToString());
                 }
                 
@@ -768,7 +881,7 @@ namespace CameraCapture
                     if (m_Grabber[i] != IntPtr.Zero)
                         MvApi.CameraGrabber_StartLive(m_Grabber[i]);
                 }
-                visEmguState.SetState((int)VisEmguVisionState.StateEnum.Capturing);
+                visState.SetState((int)VisVisionState.StateEnum.Capturing);
                 captureInProgress = true;
 
             }
@@ -792,7 +905,7 @@ namespace CameraCapture
                         MvApi.CameraGrabber_Destroy(m_Grabber[i]);
                 }
 
-                visEmguState.SetState((int)VisEmguVisionState.StateEnum.Finished);
+                visState.SetState((int)VisVisionState.StateEnum.Finished);
             }
             catch (Exception ex)
             {
@@ -1097,7 +1210,7 @@ namespace CameraCapture
                 }
 
                 captureInProgress = !captureInProgress;
-                visEmguState.SetState((int)VisEmguVisionState.StateEnum.Capturing);
+                visState.SetState((int)VisVisionState.StateEnum.Capturing);
             }
         }
 
@@ -1177,7 +1290,7 @@ namespace CameraCapture
                 Application.Idle += new EventHandler(ProcessFrame2);
                 Application.Idle += new EventHandler(ProcessFrame3);
 
-                visEmguState.SetState((int)VisEmguVisionState.StateEnum.Recording);
+                visState.SetState((int)VisVisionState.StateEnum.Recording);
             }
             else
             {
@@ -1200,7 +1313,7 @@ namespace CameraCapture
                 Application.Idle -= new EventHandler(ProcessFrame2);
                 Application.Idle -= new EventHandler(ProcessFrame3);
 
-                visEmguState.SetState((int)VisEmguVisionState.StateEnum.Capturing);
+                visState.SetState((int)VisVisionState.StateEnum.Capturing);
             }
 
             videoInProgress = !videoInProgress;
@@ -1254,6 +1367,8 @@ namespace CameraCapture
         void OnRecord(string msg);
         // 设置相机参数
         void OnCameraSetting(string msg);
+        // 定时器
+        void OnTimer(string msg);
 
     }
 
@@ -1381,6 +1496,7 @@ namespace CameraCapture
         public virtual void OnSnap(string msg) { }
         public virtual void OnRecord(string msg) { }
         public virtual void OnCameraSetting(string msg){}
+        public virtual void OnTimer(string msg) { }
     }
 
     public class CameraCapture3MethodHandlerComposite : CameraCapture3MethodHandler
@@ -1556,6 +1672,15 @@ namespace CameraCapture
             }
         }
 
+        public override void OnTimer(string msg)
+        {
+            foreach (ICameraCapture3MethodHandler handler in methodHandlers)
+            {
+                handler.OnTimer(msg);
+            }
+        }
+
+
     }
 
     #endregion
@@ -1606,6 +1731,7 @@ namespace CameraCapture
         public override void OnSnap(string msg) { log.Info(String.Format(SnapMessageFmt, msg)); }
         public override void OnRecord(string msg) { log.Info(String.Format(RecordMessageFmt, msg)); }
         public override void OnException(string addr, string msg){log.Info(String.Format(ExceptionMessageFmt, addr, msg));}
+        public override void OnTimer(string msg){}
     }
 
 
@@ -1741,6 +1867,7 @@ namespace CameraCapture
             frm.AppendToTextBox1(String.Format(RecordMessageFmt, 0, msg));
             frm.UpdateControls();
         }
+        public override void OnTimer(string msg) { }
     }
 
 
@@ -1999,22 +2126,22 @@ namespace CameraCapture
 
         public override void OnStartClient()
         {
-            this.clientState = frm.TheVisMindVision.VisEmguState.ToString();
+            this.clientState = frm.TheVisMindVision.VisState.ToString();
         }
 
         public override void OnPauseClient()
         {
-            this.clientState = frm.TheVisMindVision.VisEmguState.ToString();
+            this.clientState = frm.TheVisMindVision.VisState.ToString();
         }
 
         public override void OnResumeClient()
         {
-            this.clientState = frm.TheVisMindVision.VisEmguState.ToString();
+            this.clientState = frm.TheVisMindVision.VisState.ToString();
         }
 
         public override void OnFinishClient()
         {
-            this.clientState = frm.TheVisMindVision.VisEmguState.ToString();
+            this.clientState = frm.TheVisMindVision.VisState.ToString();
         }
 
         public override void OnBroadCastMessage(string msg)
@@ -2055,12 +2182,12 @@ namespace CameraCapture
 
         public override void OnCapture(string msg)
         {
-            this.clientState = frm.TheVisMindVision.VisEmguState.ToString();
+            this.clientState = frm.TheVisMindVision.VisState.ToString();
         }
 
         public override void OnSnap(string msg)
         {
-            //this.clientState = frm.TheVisMindVision.VisEmguState.ToString();
+            //this.clientState = frm.TheVisMindVision.visState.ToString();
             this.numberImagesSnapedByFrame0++;
             this.numberImagesSnapedByFrame1++;
             this.numberImagesSnapedByFrame2++;
@@ -2070,418 +2197,14 @@ namespace CameraCapture
 
         public override void OnRecord(string msg)
         {
-            this.clientState = frm.TheVisMindVision.VisEmguState.ToString();
-        } 
+            this.clientState = frm.TheVisMindVision.VisState.ToString();
+        }
+
+        public override void OnTimer(string msg)
+        {
+            
+        }
+
         #endregion
     }
-
-    public class VisEmguVision3
-    {
-        // 视频采集
-        private VideoCapture capture0 = null;
-        private VideoCapture capture1 = null;
-        private VideoCapture capture2 = null;
-        private VideoCapture capture3 = null;
-        // 采集的图片
-        private Mat frame0 = null;
-        private Mat frame1 = null;
-        private VideoWriter vw0 = null;
-        private VideoWriter vw1 = null;
-        private Mat frame2 = null;
-        private Mat frame3 = null;
-        // 视频写
-        private VideoWriter vw2 = null;
-        private VideoWriter vw3 = null;
-
-        // 采集及录制状态状态
-        private bool captureInProgress = false;
-        private bool videoInProgress = false;
-        private char[] codec = { 'D', 'I', 'V', 'X' };
-        private int fps = 25;
-
-        // 当前的工作相机个数
-        private int numberOfAvailableCamera = 0;
-
-        // 当前视觉系统的工作状态
-        private VisEmguVisionState visEmguState;
-
-        // 父窗口
-        private CameraCapture3 frm = null;
-
-
-        public VisEmguVision3(CameraCapture3 _frm)
-        {
-            frm = _frm;
-            //theVisMindVision = new VisMindVision3(frm.Handle);
-        }
-
-        #region 属性
-        public VideoCapture Capture0
-        {
-            get { return capture0; }
-            set { capture0 = value; }
-        }
-
-        public VideoCapture Capture1
-        {
-            get { return capture1; }
-            set { capture1 = value; }
-        }
-
-        public VideoCapture Capture2
-        {
-            get { return capture2; }
-            set { capture2 = value; }
-        }
-
-        public VideoCapture Capture3
-        {
-            get { return capture3; }
-            set { capture3 = value; }
-        }
-
-        public Mat Frame0
-        {
-            get { return frame0; }
-            set { frame0 = value; }
-        }
-
-        public Mat Frame1
-        {
-            get { return frame1; }
-            set { frame1 = value; }
-        }
-
-        public Mat Frame2
-        {
-            get { return frame2; }
-            set { frame2 = value; }
-        }
-
-        public Mat Frame3
-        {
-            get { return frame3; }
-            set { frame3 = value; }
-        }
-
-        public bool CaptureInProgress
-        {
-            get { return captureInProgress; }
-            set { captureInProgress = value; }
-        }
-
-        public bool VideoInProgress
-        {
-            get { return videoInProgress; }
-            set { videoInProgress = value; }
-        }
-
-        public VideoWriter Vw0
-        {
-            get { return vw0; }
-            set { vw0 = value; }
-        }
-
-        public VideoWriter Vw1
-        {
-            get { return vw1; }
-            set { vw1 = value; }
-        }
-
-        public VideoWriter Vw2
-        {
-            get { return vw2; }
-            set { vw2 = value; }
-        }
-
-        public VideoWriter Vw3
-        {
-            get { return vw3; }
-            set { vw3 = value; }
-        }
-
-        public int NumberOfAvailableCamera
-        {
-            get { return numberOfAvailableCamera; }
-            set { numberOfAvailableCamera = value; }
-        }
-
-        public VisEmguVisionState VisEmguState
-        {
-            get { return visEmguState; }
-            set { visEmguState = value; }
-        }
-
-        #endregion
-
-
-        public void Start()
-        {
-            CvInvoke.UseOpenCL = false;
-
-            try
-            {
-                capture0 = new VideoCapture(0);
-                capture0.ImageGrabbed += ProcessFrame0;
-
-                capture1 = new VideoCapture(1);
-                capture1.ImageGrabbed += ProcessFrame1;
-
-                capture2 = new VideoCapture(2);
-                capture2.ImageGrabbed += ProcessFrame2;
-
-                capture3 = new VideoCapture(3);
-                capture3.ImageGrabbed += ProcessFrame3;
-
-                frame0 = new Mat();
-                frame1 = new Mat();
-                frame2 = new Mat();
-                frame3 = new Mat();
-
-            }
-            catch (NullReferenceException excpt)
-            {
-                throw;
-            }
-        }
-
-        public void End()
-        {
-            try
-            {
-                capture0.Stop();
-                capture1.Stop();
-                capture2.Stop();
-                capture3.Stop();
-
-                //capture0.ImageGrabbed -= ProcessFrame0;
-                //capture0 = null;
-
-                //capture1.ImageGrabbed -= ProcessFrame1;
-                //capture1 = null;
-
-                //capture2.ImageGrabbed -= ProcessFrame2;
-                //capture2 = null;
-
-                //capture3.ImageGrabbed -= ProcessFrame3;
-                //capture3 = null;
-
-                capture0.Dispose();
-                capture1.Dispose();
-                capture2.Dispose();
-                capture3.Dispose();
-
-
-                frame0.Dispose();
-                frame1.Dispose();
-                frame2.Dispose();
-                frame3.Dispose();
-
-                //frame0 = null;
-                //frame1 = null;
-                //frame2 = null;
-                //frame3 = null;
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-
-        }
-
-
-        #region 图像采集及处理
-        private void ProcessFrame0(object sender, EventArgs arg)
-        {
-            if (capture0 != null && capture0.Ptr != IntPtr.Zero)
-            {
-                capture0.Retrieve(frame0, 0);
-
-                frm.ImageBox0.Image = frame0.Bitmap;
-                ProcessVideo(vw0, frame0);
-            }
-        }
-
-        private void ProcessFrame1(object sender, EventArgs arg)
-        {
-            if (capture1 != null && capture1.Ptr != IntPtr.Zero)
-            {
-                capture1.Retrieve(frame1, 0);
-                frm.ImageBox1.Image = frame1.Bitmap;
-                ProcessVideo(vw1, frame1);
-            }
-        }
-
-        private void ProcessFrame2(object sender, EventArgs arg)
-        {
-            if (capture2 != null && capture2.Ptr != IntPtr.Zero)
-            {
-                capture2.Retrieve(frame2, 0);
-                frm.ImageBox2.Image = frame2.Bitmap;
-                ProcessVideo(vw2, frame2);
-            }
-        }
-
-        private void ProcessFrame3(object sender, EventArgs arg)
-        {
-            if (capture3 != null && capture3.Ptr != IntPtr.Zero)
-            {
-                capture3.Retrieve(frame3, 0);
-                frm.ImageBox3.Image = frame3.Bitmap;
-                ProcessVideo(vw3, frame3);
-            }
-        }
-
-        private void ProcessVideo(VideoWriter vw, Mat frame)
-        {
-            if (videoInProgress)
-            {
-                vw.Write(frame);
-            }
-        }
-
-        #endregion
-
-
-        public void OnCapture()
-        {
-            if (capture0 != null && capture1 != null && capture2 != null && capture3 != null)
-            {
-                if (captureInProgress)
-                {  //stop the capture
-                    //captureButton.Text = "开始采集";
-                    capture0.Pause();
-                    capture1.Pause();
-                    capture2.Pause();
-                    capture3.Pause();
-                }
-                else
-                {
-                    //start the capture
-                    //captureButton.Text = "停止采集";
-                    capture0.Start();
-                    capture1.Start();
-                    capture2.Start();
-                    capture3.Start();
-                }
-
-                captureInProgress = !captureInProgress;
-            }
-        }
-
-        public void OnSnap(object sender, EventArgs e)
-        {
-
-        }
-
-        public void OnRecord(object sender, EventArgs e)
-        {
-            string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-
-            if (videoInProgress)
-            {
-                vw0 = new VideoWriter(dt + "-0.avi", VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]),
-                        25,
-                        new Size(capture0.Width, capture0.Height),
-                        true);
-
-                vw1 = new VideoWriter(dt + "-1.avi", VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]),
-                                        25,
-                                        new Size(capture0.Width, capture0.Height),
-                                        true);
-
-                vw2 = new VideoWriter(dt + "-2.avi", VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]),
-                                        25,
-                                        new Size(capture0.Width, capture0.Height),
-                                        true);
-
-                vw3 = new VideoWriter(dt + "-3.avi", VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]),
-                                        25,
-                                        new Size(capture0.Width, capture0.Height),
-                                        true);
-
-
-                Application.Idle += new EventHandler(ProcessFrame0);
-                Application.Idle += new EventHandler(ProcessFrame1);
-                Application.Idle += new EventHandler(ProcessFrame2);
-                Application.Idle += new EventHandler(ProcessFrame3);
-            }
-            else
-            {
-                vw0.Dispose();
-                vw1.Dispose();
-                vw2.Dispose();
-                vw3.Dispose();
-                Application.Idle -= new EventHandler(ProcessFrame0);
-                Application.Idle -= new EventHandler(ProcessFrame1);
-                Application.Idle -= new EventHandler(ProcessFrame2);
-                Application.Idle -= new EventHandler(ProcessFrame3);
-            }
-
-            videoInProgress = !videoInProgress;
-
-
-
-            //if (recordButton.Text == "一键录制")
-            //{
-            //    if (MessageBox.Show("开始录制吗？", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
-            //    {
-            //        VisEmguVision3.videoInProgress = true;
-
-            //        // char[] codec = { 'M', 'J', 'P', 'G' };
-            //        char[] codec = { 'D', 'I', 'V', 'X' };
-            //        int fps = 25;
-
-            //        vw0 = new VideoWriter(dt + "-0.avi", VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]),
-            //            25,
-            //            new Size(capture0.Width,capture0.Height),
-            //            true);
-
-            //        vw1 = new VideoWriter(dt + "-1.avi", VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]),
-            //                                25,
-            //                                new Size(capture0.Width, capture0.Height),
-            //                                true);
-
-            //        vw2 = new VideoWriter(dt + "-2.avi", VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]),
-            //                                25,
-            //                                new Size(capture0.Width, capture0.Height),
-            //                                true);
-
-            //        vw3 = new VideoWriter(dt + "-3.avi", VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]),
-            //                                25,
-            //                                new Size(capture0.Width, capture0.Height),
-            //                                true);
-
-
-            //        Application.Idle += new EventHandler(ProcessFrame0);
-            //        Application.Idle += new EventHandler(ProcessFrame1);
-            //        Application.Idle += new EventHandler(ProcessFrame2);
-            //        Application.Idle += new EventHandler(ProcessFrame3);
-
-            //    }
-
-
-            //}
-            //else
-            //{
-            //    if (MessageBox.Show("停止录制吗？", "Information", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
-            //    {
-            //        VisEmguVision3.videoInProgress = false;
-
-
-            //        vw0.Dispose();
-            //        vw1.Dispose();
-            //        vw2.Dispose();
-            //        vw3.Dispose();
-            //        Application.Idle -= new EventHandler(ProcessFrame0);
-            //        Application.Idle -= new EventHandler(ProcessFrame1);
-            //        Application.Idle -= new EventHandler(ProcessFrame2);
-            //        Application.Idle -= new EventHandler(ProcessFrame3);
-            //        recordButton.Text = "录制";
-            //    }
-            //}
-        }
-    }
-
 }

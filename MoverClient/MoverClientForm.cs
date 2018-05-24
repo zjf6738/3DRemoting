@@ -163,6 +163,11 @@ namespace MoverClient
 
         }
 
+        private void ClearTextButton_Click(object sender, EventArgs e)
+        {
+            this.textBox1.Text = "";
+        }
+
 
 
     }

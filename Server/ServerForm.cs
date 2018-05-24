@@ -266,7 +266,7 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             }
             else
             {
-                commObj.RcvTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                commObj.RcvTime = DateTimeNowFmt1();
                 rcvMsg = commObj.ToString();
             }
 
@@ -278,7 +278,12 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 
         }
 
-        public void Check()
+	    private static string DateTimeNowFmt1()
+	    {
+	        return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+	    }
+
+	    public void Check()
         {
             lock (this)
                 Invoke(new MethodInvoker(delegate()
