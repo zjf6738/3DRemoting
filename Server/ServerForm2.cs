@@ -16,6 +16,7 @@ using System.Threading;
 using Qzeim.ThrdPrint.BroadCast.RemoteObject;
 using Qzeim.ThrdPrint.BroadCast.Common;
 using log4net;
+using Newtonsoft.Json;
 
 namespace Qzeim.ThrdPrint.BroadCast.Server
 {
@@ -46,6 +47,9 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             methodHandlerComposite.Add(serverLog);
             methodHandlerComposite.Add(serverMonitor);
             methodHandlerComposite.Add(serverUI);
+
+            // 这是非线程安全地，需要进一步寻找优化方式
+            System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = false;  
 
             propertyGrid1.SelectedObject = serverMonitor;
         }
@@ -86,12 +90,46 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
 
         #region 通信部分
 
+        public class XYZ
+        {
+            public XYZ(double _x, double _y, double _z)
+            {
+                x = _x;
+                y = _y;
+                z = _z;
+            }
+
+            private double x = 2.0;
+            private double y = 3.0;
+            private double z = 3.0;
+
+            public double X
+            {
+                get { return x; }
+                set { x = value; }
+            }
+
+            public double Y
+            {
+                get { return y; }
+                set { y = value; }
+            }
+
+            public double Z
+            {
+                get { return z; }
+                set { z = value; }
+            }
+        }
+
+
         // 响应客户端的事件
         private void DefaultUpCastEventHandler(string msg)
         {
 
             // 接收并提取信息
             CommObj commObj = CommObj.FromJson(msg);
+            XYZ xyz = new XYZ(0,0,0);
 
             if (commObj == null)
             {
@@ -101,6 +139,14 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
             {
                 commObj.RcvTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 serverComm.RcvMsg = commObj.ToString();
+
+                if (commObj.DataType.Equals("XYZ"))
+                {
+                    xyz = JsonConvert.DeserializeObject<XYZ>(commObj.DataBody);
+
+                }
+
+
 
                 BroadCastMessage(msg);
             }
@@ -663,7 +709,7 @@ namespace Qzeim.ThrdPrint.BroadCast.Server
         #region 使用小函数
         private void RefreshControl()
         {
-            frm.PropertyGrid1.Refresh();
+            //frm.PropertyGrid1.Refresh();
         } 
         #endregion
 

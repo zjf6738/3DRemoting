@@ -545,6 +545,12 @@ namespace CameraCapture
         } 
         #endregion
 
+        private void CameraCapture3_Resize(object sender, EventArgs e)
+        {
+            this.pictureBox0.Size = this.pictureBox0.Parent.Size;
+
+        }
+
     }
 
     // 视觉模块

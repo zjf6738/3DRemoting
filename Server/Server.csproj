@@ -85,6 +85,10 @@
     <Reference Include="log4net">
       <HintPath>..\dll\log4net-2.0.8\bin\net\2.0\release\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Json100r2\Bin11\net20\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Qzeim.ThrdPrint.BroadCast.Common">
       <HintPath>..\Common\bin\Debug\Qzeim.ThrdPrint.BroadCast.Common.dll</HintPath>
     </Reference>

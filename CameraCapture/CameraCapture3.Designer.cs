@@ -441,6 +441,7 @@ namespace CameraCapture
             this.Text = "3D打印视觉系统";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CameraCapture3_FormClosing);
             this.Load += new System.EventHandler(this.CameraCapture3_Load);
+            this.Resize += new System.EventHandler(this.CameraCapture3_Resize);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
