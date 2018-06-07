@@ -337,7 +337,15 @@ namespace CameraCapture
                 methodHandlerComposite.OnException("OnBroadCastingInfo", ex.Message);
             }
             
-            
+        }
+
+        public void Check()
+        {
+            lock (this)
+                Invoke(new MethodInvoker(delegate()
+                {
+                    methodHandlerComposite.OnBroadCastMessage(visComm.RcvMsg);
+                }));
         }
 
         private CommObj CommObjFromMessage(string message)
@@ -368,26 +376,30 @@ namespace CameraCapture
             // 由机器人系统发送过来
             if (commObj.SrcId == 0x20)
             {
-                ProcessRoboticRequest();
+                ProcessRoboticRequest(commObj);
+            }
+            else if (commObj.SrcId == 0x30)
+            {
+                ProcessMoverRequest(commObj);
             }
 
         }
 
-        void ProcessRoboticRequest()
+        void ProcessRoboticRequest(CommObj commObj)
         {
-            
+            XYZ xyz = new XYZ(0, 0, 0);
+
+            if (commObj.DataType.Equals("XYZ"))
+            {
+                xyz = JsonConvert.DeserializeObject<XYZ>(commObj.DataBody);
+                
+            }
         }
 
-
-        public void Check()
+        void ProcessMoverRequest(CommObj commObj)
         {
-            lock (this)
-                Invoke(new MethodInvoker(delegate()
-                {
-                    methodHandlerComposite.OnBroadCastMessage(visComm.RcvMsg);
-                }));
-        }
 
+        }
        
         #endregion
 
@@ -1115,7 +1127,6 @@ namespace CameraCapture
             if (Image != IntPtr.Zero)
             {
                 string filename = GenerateFileName(Grabber,".jpg");
-
                 MvApi.CameraImage_SaveAsJpeg(Image, filename, 90);
 
                 saveAVIFilenames += filename + "\r\n";
