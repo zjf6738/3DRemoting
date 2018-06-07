@@ -542,18 +542,22 @@ namespace CameraCapture
         public void ClearTextBox1()
         {
             textBox1.Clear();
-        } 
-        #endregion
-
+        }
         private void CameraCapture3_Resize(object sender, EventArgs e)
         {
             this.pictureBox0.Size = this.pictureBox0.Parent.Size;
 
         }
 
+        #endregion
+
     }
 
     // 视觉模块
+
+    /// <summary>
+    /// 相机状态，包括Starting,Capturing,Recording,Abnormal,Finished
+    /// </summary>
     public class VisVisionState
     {
         public enum StateEnum
@@ -583,6 +587,9 @@ namespace CameraCapture
 
     }
 
+    /// <summary>
+    ///  采集到的点，包括时间及点
+    /// </summary>
     public class CapturedPoints
     {
         private List<DateTime> times1 = new List<DateTime>();
@@ -716,7 +723,6 @@ namespace CameraCapture
         }
 
     }
-
 
     // MindVision视觉系统
     public class VisMindVision3
@@ -1328,9 +1334,10 @@ namespace CameraCapture
     }
 
 
-
-    #region 服务器功能接口
-    // 主要用以响应CameraCapture3中的各个函数
+    #region 应用功能接口
+    /// <summary>
+    /// 主要用以响应CameraCapture3中的各个函数，与camera3Frame是一致地
+    /// </summary>
     public interface ICameraCapture3MethodHandler
     {
         // 开启客户端
@@ -1378,6 +1385,9 @@ namespace CameraCapture
 
     }
 
+    /// <summary>
+    /// ICameraCapture3MethodHandler缺省实现
+    /// </summary>
     public class CameraCapture3MethodHandler : ICameraCapture3MethodHandler
     {
 
@@ -1505,6 +1515,9 @@ namespace CameraCapture
         public virtual void OnTimer(string msg) { }
     }
 
+    /// <summary>
+    /// composite 模式
+    /// </summary>
     public class CameraCapture3MethodHandlerComposite : CameraCapture3MethodHandler
     {
         private List<ICameraCapture3MethodHandler> methodHandlers = new List<ICameraCapture3MethodHandler>();
@@ -1689,9 +1702,9 @@ namespace CameraCapture
 
     }
 
-    #endregion
-
-
+    /// <summary>
+    /// 日志
+    /// </summary>
     [assembly: log4net.Config.XmlConfigurator(Watch = true)]
     public class CameraCapture3Log : CameraCapture3MethodHandler
     {
@@ -1716,13 +1729,13 @@ namespace CameraCapture
             Debug.Assert(log != null);
         }
 
-        public override void OnStartClient(){log.Info(StartClientFmt);}
+        public override void OnStartClient() { log.Info(StartClientFmt); }
         public override void OnPauseClient() { log.Info(PauseClientFmt); }
         public override void OnResumeClient() { log.Info(ResumeClientFmt); }
         public override void OnFinishClient() { log.Info(FinishClientFmt); }
         public override void OnBroadCastMessage(string msg) { log.Info(String.Format(BroadCastMessageFmt, msg)); }
         public override void OnUpCastEvent(string msg) { log.Info(String.Format(VisUpCastMessageFmt, msg)); }
-        public override void OnClearText() {  }
+        public override void OnClearText() { }
         //public override void OnProcessFrame0(string msg) { log.Info(String.Format(ProcessFrameMessageFmt, 0,msg));}
         //public override void OnProcessFrame1(string msg) {log.Info(String.Format(ProcessFrameMessageFmt, 1,msg)); }
         //public override void OnProcessFrame2(string msg) {log.Info(String.Format(ProcessFrameMessageFmt, 2,msg)); }
@@ -1736,12 +1749,13 @@ namespace CameraCapture
         public override void OnCapture(string msg) { log.Info(String.Format(CaptureMessageFmt, msg)); }
         public override void OnSnap(string msg) { log.Info(String.Format(SnapMessageFmt, msg)); }
         public override void OnRecord(string msg) { log.Info(String.Format(RecordMessageFmt, msg)); }
-        public override void OnException(string addr, string msg){log.Info(String.Format(ExceptionMessageFmt, addr, msg));}
-        public override void OnTimer(string msg){}
+        public override void OnException(string addr, string msg) { log.Info(String.Format(ExceptionMessageFmt, addr, msg)); }
+        public override void OnTimer(string msg) { }
     }
 
-
-
+    /// <summary>
+    /// UI更新
+    /// </summary>
     public class CameraCapture3UI : CameraCapture3MethodHandler
     {
         private CameraCapture3 frm;
@@ -1876,9 +1890,10 @@ namespace CameraCapture
         public override void OnTimer(string msg) { }
     }
 
-
-
-    public class CameraCapture3Monitor:CameraCapture3MethodHandler
+    /// <summary>
+    /// 变量监控
+    /// </summary>
+    public class CameraCapture3Monitor : CameraCapture3MethodHandler
     {
         protected string clientState = "未启动";
         protected int numOfBroadCastEventObserver = 0;
@@ -2208,9 +2223,14 @@ namespace CameraCapture
 
         public override void OnTimer(string msg)
         {
-            
+
         }
 
         #endregion
     }
+
+    #endregion
+
+
+
 }
