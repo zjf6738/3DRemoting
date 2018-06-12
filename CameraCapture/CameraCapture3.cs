@@ -555,11 +555,6 @@ namespace CameraCapture
         {
             textBox1.Clear();
         }
-        private void CameraCapture3_Resize(object sender, EventArgs e)
-        {
-            this.pictureBox0.Size = this.pictureBox0.Parent.Size;
-
-        }
 
         #endregion
 

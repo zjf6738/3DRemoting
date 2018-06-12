@@ -103,8 +103,8 @@ namespace CameraCapture
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(901, 762);
-            this.splitContainer1.SplitterDistance = 80;
+            this.splitContainer1.Size = new System.Drawing.Size(1452, 878);
+            this.splitContainer1.SplitterDistance = 92;
             this.splitContainer1.TabIndex = 0;
             // 
             // recordButton
@@ -161,8 +161,8 @@ namespace CameraCapture
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.textBox1);
-            this.splitContainer2.Size = new System.Drawing.Size(901, 678);
-            this.splitContainer2.SplitterDistance = 544;
+            this.splitContainer2.Size = new System.Drawing.Size(1452, 782);
+            this.splitContainer2.SplitterDistance = 627;
             this.splitContainer2.TabIndex = 0;
             // 
             // splitContainer3
@@ -178,8 +178,8 @@ namespace CameraCapture
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer3.Size = new System.Drawing.Size(901, 544);
-            this.splitContainer3.SplitterDistance = 643;
+            this.splitContainer3.Size = new System.Drawing.Size(1452, 627);
+            this.splitContainer3.SplitterDistance = 1036;
             this.splitContainer3.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -197,14 +197,14 @@ namespace CameraCapture
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(643, 544);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1036, 627);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // splitContainer7
             // 
             this.splitContainer7.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer7.IsSplitterFixed = true;
-            this.splitContainer7.Location = new System.Drawing.Point(324, 275);
+            this.splitContainer7.Location = new System.Drawing.Point(521, 316);
             this.splitContainer7.Name = "splitContainer7";
             this.splitContainer7.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -216,8 +216,8 @@ namespace CameraCapture
             // splitContainer7.Panel2
             // 
             this.splitContainer7.Panel2.Controls.Add(this.pictureBox3);
-            this.splitContainer7.Size = new System.Drawing.Size(316, 266);
-            this.splitContainer7.SplitterDistance = 38;
+            this.splitContainer7.Size = new System.Drawing.Size(512, 308);
+            this.splitContainer7.SplitterDistance = 44;
             this.splitContainer7.TabIndex = 3;
             // 
             // label4
@@ -233,7 +233,7 @@ namespace CameraCapture
             // 
             this.camera4SettingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.camera4SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.camera4SettingButton.Location = new System.Drawing.Point(255, 1);
+            this.camera4SettingButton.Location = new System.Drawing.Point(451, 1);
             this.camera4SettingButton.Name = "camera4SettingButton";
             this.camera4SettingButton.Size = new System.Drawing.Size(58, 23);
             this.camera4SettingButton.TabIndex = 0;
@@ -247,7 +247,7 @@ namespace CameraCapture
             this.pictureBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox3.Location = new System.Drawing.Point(0, 0);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(316, 224);
+            this.pictureBox3.Size = new System.Drawing.Size(512, 260);
             this.pictureBox3.TabIndex = 1;
             this.pictureBox3.TabStop = false;
             // 
@@ -255,7 +255,7 @@ namespace CameraCapture
             // 
             this.splitContainer6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer6.IsSplitterFixed = true;
-            this.splitContainer6.Location = new System.Drawing.Point(3, 275);
+            this.splitContainer6.Location = new System.Drawing.Point(3, 316);
             this.splitContainer6.Name = "splitContainer6";
             this.splitContainer6.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -267,8 +267,8 @@ namespace CameraCapture
             // splitContainer6.Panel2
             // 
             this.splitContainer6.Panel2.Controls.Add(this.pictureBox2);
-            this.splitContainer6.Size = new System.Drawing.Size(315, 266);
-            this.splitContainer6.SplitterDistance = 38;
+            this.splitContainer6.Size = new System.Drawing.Size(512, 308);
+            this.splitContainer6.SplitterDistance = 44;
             this.splitContainer6.TabIndex = 2;
             // 
             // label3
@@ -284,7 +284,7 @@ namespace CameraCapture
             // 
             this.camera3SettingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.camera3SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.camera3SettingButton.Location = new System.Drawing.Point(254, 3);
+            this.camera3SettingButton.Location = new System.Drawing.Point(451, 3);
             this.camera3SettingButton.Name = "camera3SettingButton";
             this.camera3SettingButton.Size = new System.Drawing.Size(58, 23);
             this.camera3SettingButton.TabIndex = 0;
@@ -298,7 +298,7 @@ namespace CameraCapture
             this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox2.Location = new System.Drawing.Point(0, 0);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(315, 224);
+            this.pictureBox2.Size = new System.Drawing.Size(512, 260);
             this.pictureBox2.TabIndex = 1;
             this.pictureBox2.TabStop = false;
             // 
@@ -306,7 +306,7 @@ namespace CameraCapture
             // 
             this.splitContainer5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer5.IsSplitterFixed = true;
-            this.splitContainer5.Location = new System.Drawing.Point(324, 3);
+            this.splitContainer5.Location = new System.Drawing.Point(521, 3);
             this.splitContainer5.Name = "splitContainer5";
             this.splitContainer5.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -318,8 +318,8 @@ namespace CameraCapture
             // splitContainer5.Panel2
             // 
             this.splitContainer5.Panel2.Controls.Add(this.pictureBox1);
-            this.splitContainer5.Size = new System.Drawing.Size(316, 266);
-            this.splitContainer5.SplitterDistance = 37;
+            this.splitContainer5.Size = new System.Drawing.Size(512, 307);
+            this.splitContainer5.SplitterDistance = 42;
             this.splitContainer5.TabIndex = 1;
             // 
             // label2
@@ -335,7 +335,7 @@ namespace CameraCapture
             // 
             this.camera2SettingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.camera2SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.camera2SettingButton.Location = new System.Drawing.Point(255, 3);
+            this.camera2SettingButton.Location = new System.Drawing.Point(451, 3);
             this.camera2SettingButton.Name = "camera2SettingButton";
             this.camera2SettingButton.Size = new System.Drawing.Size(58, 23);
             this.camera2SettingButton.TabIndex = 0;
@@ -349,7 +349,7 @@ namespace CameraCapture
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(316, 225);
+            this.pictureBox1.Size = new System.Drawing.Size(512, 261);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
@@ -369,8 +369,8 @@ namespace CameraCapture
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.pictureBox0);
-            this.splitContainer4.Size = new System.Drawing.Size(315, 266);
-            this.splitContainer4.SplitterDistance = 37;
+            this.splitContainer4.Size = new System.Drawing.Size(512, 307);
+            this.splitContainer4.SplitterDistance = 42;
             this.splitContainer4.TabIndex = 0;
             // 
             // label1
@@ -386,7 +386,7 @@ namespace CameraCapture
             // 
             this.camera1SettingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.camera1SettingButton.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.camera1SettingButton.Location = new System.Drawing.Point(254, 2);
+            this.camera1SettingButton.Location = new System.Drawing.Point(451, 2);
             this.camera1SettingButton.Name = "camera1SettingButton";
             this.camera1SettingButton.Size = new System.Drawing.Size(58, 23);
             this.camera1SettingButton.TabIndex = 0;
@@ -400,7 +400,7 @@ namespace CameraCapture
             this.pictureBox0.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox0.Location = new System.Drawing.Point(0, 0);
             this.pictureBox0.Name = "pictureBox0";
-            this.pictureBox0.Size = new System.Drawing.Size(315, 225);
+            this.pictureBox0.Size = new System.Drawing.Size(512, 261);
             this.pictureBox0.TabIndex = 0;
             this.pictureBox0.TabStop = false;
             // 
@@ -409,7 +409,7 @@ namespace CameraCapture
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(254, 544);
+            this.propertyGrid1.Size = new System.Drawing.Size(412, 627);
             this.propertyGrid1.TabIndex = 0;
             // 
             // textBox1
@@ -419,7 +419,7 @@ namespace CameraCapture
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(901, 130);
+            this.textBox1.Size = new System.Drawing.Size(1452, 151);
             this.textBox1.TabIndex = 0;
             // 
             // timer1
@@ -431,13 +431,13 @@ namespace CameraCapture
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(901, 762);
+            this.ClientSize = new System.Drawing.Size(1452, 878);
             this.Controls.Add(this.splitContainer1);
             this.Name = "CameraCapture3";
             this.Text = "3D打印视觉系统";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CameraCapture3_FormClosing);
             this.Load += new System.EventHandler(this.CameraCapture3_Load);
-            this.Resize += new System.EventHandler(this.CameraCapture3_Resize);
+            //this.Resize += new System.EventHandler(this.CameraCapture3_Resize);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
