@@ -79,7 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonAssemblyInfo.cs" />
-    <Compile Include="EndPointDectector.cs" />
+    <Compile Include="EndPointDectecto2.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestWindow.cs" />

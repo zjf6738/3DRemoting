@@ -152,6 +152,9 @@ namespace HelloWorld
             src_roi = new Mat(frame, roi_scale);
             roi_kmeans = get_roi_Sprinkler_area(ref src_roi);
 
+            // KMeans
+            // CvInvoke.Imshow("kmeans", roi_kmeans);
+
             roi_pro = new Mat(frame_scale, roi);//复制跟踪包围框部分
             roi_temp = frame_scale.Clone();//用这个显示检测的末端点和拟合的线
             roi_singletemp = frame_scale.Clone();//用这个单独显示检测的末端点
@@ -162,17 +165,24 @@ namespace HelloWorld
             int srcthreshold = 100;
 
             CvInvoke.CvtColor(roi_kmeans, roi_gray, ColorConversion.Bgr2Gray);//转化为灰度图像
-            CvInvoke.Threshold(roi_gray, roi_threshold, 30, 255, ThresholdType.Binary);//阈值化操作
+            CvInvoke.Threshold(roi_gray, roi_threshold, 180, 255, ThresholdType.Binary);//阈值化操作
             imageblur(roi_threshold, roi_blur, blur_size, srcthreshold);
-            //Mat element = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new Size(2, 1), new Point(-1, -1));//腐蚀操作
-            //CvInvoke.Erode(roi_threshold, roi_erode, element, new Point(-1, -1), 1, BorderType.Default, new MCvScalar(255, 255, 255));
+
+            CvInvoke.Imshow("roi_gray", roi_gray);
+            CvInvoke.Imshow("roi_threshold", roi_threshold);
+            CvInvoke.Imshow("roi_blur", roi_blur);
+            
             CvInvoke.Canny(roi_blur, roi_canny, 10, 200, 3);
 
+            CvInvoke.Imshow("Canny", roi_canny);
+
             //canny检测后直线的末端点判断
-            PointF final_canny_crossPoint = CrossPointFromCanny(roi_canny, roi);
+            PointF final_canny_crossPoint = CrossPointFromCanny(roi_canny, roi_scale);
 
             //去掉canny检测后上半部分的
             roi_cannyx = SegmenttopFromCanny(roi_canny);
+
+            CvInvoke.Imshow("roi_cannyx", roi_cannyx);
 
             //hough直线检测
             lines = CvInvoke.HoughLinesP(roi_cannyx, 1, Math.PI / 360, 40, 50, 380);//hough直线
@@ -277,13 +287,12 @@ namespace HelloWorld
         }
 
         //获取两条直线的夹角
+        //private static PointF getCrossPoint(double[] pt1, double[] pt2, PointF final_canny_crossPoint, Mat roi_kmeans)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        private static PointF getCrossPoint(double[] pt1, double[] pt2, PointF final_canny_crossPoint, Mat roi_kmeans)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static PointF CrossPointFromCanny(Mat roi_canny, Rectangle roi)
+        private static PointF CrossPointFromCanny(Mat roi_canny, Rectangle roi_scale)
         {
             PointF canny_crossPoint = new PointF();
             int nl, nc;
@@ -312,8 +321,8 @@ namespace HelloWorld
             }
 
             PointF final_canny_crossPoint = new PointF(); //最终的canny检测的点
-            final_canny_crossPoint.X = canny_crossPoint.X + roi.X;
-            final_canny_crossPoint.Y = canny_crossPoint.Y + roi.Y;
+            final_canny_crossPoint.X = canny_crossPoint.X + roi_scale.X;
+            final_canny_crossPoint.Y = canny_crossPoint.Y + roi_scale.Y;
 
             return final_canny_crossPoint;
         }
@@ -477,62 +486,46 @@ namespace HelloWorld
         {
             //运用kmeans方法，对roi区域进行分类，此处的处理只是分为三类
 
-            Mat roi_data = new Mat();
-            Mat roi_label = new Mat();
-            Mat roi_kmeans = new Mat();
-            //Mat tmp = new Mat(new Size(1,3),DepthType.Cv32F,1);
-            
-            for (int i = 0; i < src_roi.Rows; i++)
-                for (int j = 0; j < src_roi.Cols; j++)
-                {
-                    byte [] point = src_roi.GetData(i, j);
-                    //tmp = (Mat_<float>(1, 3) << point[0], point[1], point[2]);
-                    
-                    double [] fdata =  { point[0], point[1], point[2] };
+            Image<Bgr, byte> src = src_roi.ToImage<Bgr,byte>();
+            Matrix<float> roi_data = new Matrix<float>(src_roi.Rows * src.Cols, 1, 3);
+            Matrix<int> roi_label = new Matrix<int>(src_roi.Rows * src.Cols, 1);
 
-                    Mat tmp = new Mat(new Size(1, 3), DepthType.Cv64F, 1);
-                    Marshal.Copy(fdata, 0, tmp.DataPointer, 3);
-                    //Marshal.Copy(tmp.DataPointer, fdata, 0, 1*3);
-                    //Mat tmp = new Mat(new Size(1, 3), DepthType.Cv32F, 1,fdata,1);
-                    //tmp.Data = new float[] { point[0], point[1], point[2] };
-                    //tmp.Data.SetValue(point[0],0,0);
-                    //tmp.Data.SetValue(point[1],1,0);
-                    //tmp.Data.SetValue(point[2],2,0);
-
-                    roi_data.PushBack(tmp);
-                }
-
-            for (int i = 0; i < roi_data.Rows; i++)
-                for (int j = 0; j < roi_data.Cols; j++)
+            for (int y = 0; y < src.Rows; y++)
             {
-                float point = (float) roi_data.Data.GetValue(i, j);
-                Console.WriteLine(point);
+                for (int x = 0; x < src.Cols; x++)
+                {
+                    roi_data.Data[y + x * src.Rows, 0] = (float)src[y, x].Blue;
+                    roi_data.Data[y + x * src.Rows, 1] = (float)src[y, x].Green;
+                    roi_data.Data[y + x * src.Rows, 2] = (float)src[y, x].Red;
                 }
+            }
 
-            //MCvTermCriteria
-            //TermCritType.Eps
+            MCvTermCriteria term = new MCvTermCriteria(100, 0.5);
+            term.Type=TermCritType.Iter | TermCritType.Eps;
 
-            CvInvoke.Kmeans(roi_data, 3, roi_label, new MCvTermCriteria(), 10, KMeansInitType.RandomCenters);
-        
-            //CvInvoke.Kmeans(roi_data, 3, roi_label, new MCvTermCriteria(TermCritType.Eps + TermCritType.Iter, 10, 1.0),3, KMEANS_RANDOM_CENTERS);
-            
+            int clusterCount = 3;
+            int attempts =3;
+            Matrix<Single> centers = new Matrix<Single>(clusterCount, src.Rows * src.Cols);
+            CvInvoke.Kmeans(roi_data, clusterCount, roi_label, term, attempts, KMeansInitType.PPCenters);
+     
             int n = 0;
+            Mat roi_kmeans = new Mat();
             roi_kmeans = src_roi.Clone();
 
 	        int label1 = 0, label2 = 0, label3 = 0;
             
             for (int i = 0; i < src_roi.Rows*src_roi.Cols; i++)
             {
-                Byte[] clusterIdx = roi_label.GetData();
-                if (clusterIdx[i] == 0)
+                int clusterIdx = roi_label.Data[i,0];
+                if (clusterIdx == 0)
                 {
                     label1++;
                 }
-                else if (clusterIdx[i] == 1)
+                else if (clusterIdx == 1)
                 {
                     label2++;
                 }
-                else if (clusterIdx[i] == 2)
+                else if (clusterIdx == 2)
                 {
                     label3++;
                 }
@@ -552,27 +545,31 @@ namespace HelloWorld
             {
                 final_label = 2;
             }
-            
+
+            Image<Bgr, byte> roiKeamsImg = roi_kmeans.ToImage<Bgr, byte>();
             for (int i = 0; i < src_roi.Rows; i++)
-            {
-                Byte[] clusterIdx = roi_label.GetData();
+            {   
                 for (int j = 0; j < src_roi.Cols; j++)
                 {
-                    if (clusterIdx[j] == final_label)
+                    int clusterIdx = roi_label.Data[i + j * src.Rows, 0];
+
+                    if (clusterIdx  == final_label)
                     {
-                        //roi_kmeans.at<Vec3b>(i, j) = new MCvScalar(0, 0, 255);
-                        roi_kmeans.Data.SetValue(new MCvScalar(0, 0, 255), i, j);
+                        roiKeamsImg.Data[i, j, 0] = 0;
+                        roiKeamsImg.Data[i, j, 1] = 0;
+                        roiKeamsImg.Data[i, j, 2] = 255;
                     }
                     else
                     {
-                        //roi_kmeans.at<Vec3b>(i, j) = new MCvScalar(255, 255, 255);
-                        roi_kmeans.Data.SetValue(new MCvScalar(255, 255, 255), i, j);
+                        roiKeamsImg.Data[i, j, 0] = 255;
+                        roiKeamsImg.Data[i, j, 1] = 255;
+                        roiKeamsImg.Data[i, j, 2] = 255;
                     }
-		             //roi_kmeans.at<Vec3b>(i, j) = colorTab[clusterIdx]
                     n++;
                 }
             }
-            return roi_kmeans;
+            return  roiKeamsImg.Mat;
+            //return roi_kmeans;
 
         }
 

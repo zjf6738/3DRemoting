@@ -47,7 +47,7 @@ namespace HelloWorld
           if (roi.Width == 0 || roi.Height == 0) return 0;
 
           // 位置检测器
-          EndPointDectector dectector = new EndPointDectector(frame,roi);
+          EndPointDectector dectector = new EndPointDectector(frame_scale, roi);
 
           Test1();
 
@@ -101,11 +101,14 @@ namespace HelloWorld
            CvInvoke.Rectangle(dectector.Frame, dectector.RoiScale, new MCvScalar(255, 0, 0), 2); //绘制原图的ROI区域
            CvInvoke.Imshow("input tracker", frame);
 
-           // sobel
-           CvInvoke.Imshow("edge_sobel", dectector.RoiSobel);
+           // KMeans
+           CvInvoke.Imshow("kmeans", dectector.Roi_Kmeans);
 
-           // canny
-           CvInvoke.Imshow("Canny", dectector.RoiCanny);
+           //// sobel
+           //CvInvoke.Imshow("edge_sobel", dectector.RoiSobel);
+
+            //canny
+            //CvInvoke.Imshow("Canny", dectector.RoiCanny);
 
            if (dectector.Lines.Length > 1) //判断检测的直线条数，必须要大于等于2
            {
@@ -113,7 +116,7 @@ namespace HelloWorld
                    new MCvScalar(0, 0, 255), 2, LineType.EightConnected);
                CvInvoke.Line(dectector.RoiTemp, dectector.FinalLineanother.P1, dectector.FinalLineanother.P2,
                    new MCvScalar(0, 0, 255), 2, LineType.EightConnected);
-               CvInvoke.Circle(dectector.RoiSingletemp, new Point((int) crossPoint.X, (int) crossPoint.Y), 3,
+               CvInvoke.Circle(dectector.RoiSingletemp, new Point((int)crossPoint.X, (int)crossPoint.Y), 3,
                    new MCvScalar(255, 100, 0));
            }
            else if (dectector.Lines.Length == 1)
