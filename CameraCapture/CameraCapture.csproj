@@ -103,20 +103,8 @@
     <Compile Include="CameraCapture3.Designer.cs">
       <DependentUpon>CameraCapture3.cs</DependentUpon>
     </Compile>
-    <Compile Include="EndPointDectector.cs" />
+    <Compile Include="EndPointDectecto3.cs" />
     <Compile Include="Utility.cs" />
-    <Compile Include="VideoRecord.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VideoRecord.Designer.cs">
-      <DependentUpon>VideoRecord.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CameraCapture.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CameraCapture.Designer.cs">
-      <DependentUpon>CameraCapture.cs</DependentUpon>
-    </Compile>
     <Compile Include="CommonAssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -124,14 +112,6 @@
     <Compile Include="VisLog.cs" />
     <EmbeddedResource Include="CameraCapture3.resx">
       <DependentUpon>CameraCapture3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VideoRecord.resx">
-      <DependentUpon>VideoRecord.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CameraCapture.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>CameraCapture.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

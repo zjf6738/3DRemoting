@@ -92,6 +92,7 @@
     <Compile Include="EventWrapper.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GlobalDef.cs" />
     <Compile Include="IBroadCast.cs">
       <SubType>Code</SubType>
     </Compile>
