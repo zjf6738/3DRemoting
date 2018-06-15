@@ -58,6 +58,7 @@ namespace CameraCapture
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.outputRobotPointsButton = new System.Windows.Forms.Button();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -97,6 +98,7 @@ namespace CameraCapture
             // 
             this.splitContainer1.Panel1.Controls.Add(this.recordButton);
             this.splitContainer1.Panel1.Controls.Add(this.captureButton);
+            this.splitContainer1.Panel1.Controls.Add(this.outputRobotPointsButton);
             this.splitContainer1.Panel1.Controls.Add(this.commTestButton);
             this.splitContainer1.Panel1.Controls.Add(this.snapButton);
             // 
@@ -129,7 +131,7 @@ namespace CameraCapture
             // 
             // commTestButton
             // 
-            this.commTestButton.Location = new System.Drawing.Point(787, 12);
+            this.commTestButton.Location = new System.Drawing.Point(710, 12);
             this.commTestButton.Name = "commTestButton";
             this.commTestButton.Size = new System.Drawing.Size(75, 23);
             this.commTestButton.TabIndex = 0;
@@ -427,6 +429,16 @@ namespace CameraCapture
             this.timer1.Enabled = true;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // outputRobotPointsButton
+            // 
+            this.outputRobotPointsButton.Location = new System.Drawing.Point(809, 12);
+            this.outputRobotPointsButton.Name = "outputRobotPointsButton";
+            this.outputRobotPointsButton.Size = new System.Drawing.Size(120, 23);
+            this.outputRobotPointsButton.TabIndex = 0;
+            this.outputRobotPointsButton.Text = "机器人采集点输出";
+            this.outputRobotPointsButton.UseVisualStyleBackColor = true;
+            this.outputRobotPointsButton.Click += new System.EventHandler(this.outputRobotPointsButton_Click);
+            // 
             // CameraCapture3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -437,7 +449,6 @@ namespace CameraCapture
             this.Text = "3D打印视觉系统";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CameraCapture3_FormClosing);
             this.Load += new System.EventHandler(this.CameraCapture3_Load);
-            //this.Resize += new System.EventHandler(this.CameraCapture3_Resize);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
@@ -502,6 +513,7 @@ namespace CameraCapture
         private Button camera4SettingButton;
         private Button camera3SettingButton;
         private Button camera2SettingButton;
+        private Button outputRobotPointsButton;
 
         public PictureBox ImageBox0
         {

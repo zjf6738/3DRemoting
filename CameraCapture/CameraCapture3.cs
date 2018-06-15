@@ -33,6 +33,8 @@ namespace CameraCapture
 
         // 视觉模块
         private VisMindVision3 theVisMindVision = null; // 迈德威视视觉系统
+        // 机器人模块
+        private VisRobot3 theVisRobot3 = null;
 
         // 通信模块
         private VisComm visComm = null;
@@ -64,6 +66,8 @@ namespace CameraCapture
 
             // 视觉
             theVisMindVision = new VisMindVision3(this);
+            // 机器人
+            theVisRobot3 = new VisRobot3(this);
 
             methodHandlerComposite = new CameraCapture3MethodHandlerComposite();
             methodHandlerComposite.Add(visLog);
@@ -368,17 +372,17 @@ namespace CameraCapture
         private void ProcessCommObj(CommObj commObj)
         {
             // 不是发送给视觉端，则直接退出
-            if (commObj.DestId != 0x10)
+            if (commObj.DestId != GlobalDef.VISION_ID)
             {
                 return;
             }
 
             // 由机器人系统发送过来
-            if (commObj.SrcId == 0x20)
+            if (commObj.SrcId == GlobalDef.ROBOT_ID)
             {
                 ProcessRoboticRequest(commObj);
             }
-            else if (commObj.SrcId == 0x30)
+            else if (commObj.SrcId == GlobalDef.MOVER_ID)
             {
                 ProcessMoverRequest(commObj);
             }
@@ -392,9 +396,29 @@ namespace CameraCapture
             if (commObj.DataType.Equals("XYZ"))
             {
                 xyz = JsonConvert.DeserializeObject<XYZ>(commObj.DataBody);
-                
+
+                visMonitor.NumberPointsCapturedByRobot++;
+
+                new Thread(ProcessRoboticRequest_Check).Start();
+                theVisMindVision.OnSnap(-1);
+                new Thread(ProcessRoboticRequest_Check).Start();
+
+                string[] paths = theVisMindVision.SnapFramesPath;
+                theVisRobot3.TheCapturedRoboticPoints.Add(xyz,DateTime.Now,paths[0],paths[1],paths[2],paths[3]);
+                //theVisRobot3.TheCapturedRoboticPoints.Add(xyz, DateTime.Now);
+                this.propertyGrid1.Refresh();
             }
         }
+
+        public void ProcessRoboticRequest_Check()
+        {
+            lock (this)
+                Invoke(new MethodInvoker(delegate()
+                {
+                    Thread.Sleep(1500);
+                }));
+        }
+
 
         void ProcessMoverRequest(CommObj commObj)
         {
@@ -446,10 +470,10 @@ namespace CameraCapture
 
         private void GetLatestImageDetectedPoints(out Point pt1, out Point pt2, out Point pt3, out Point pt4)
         {
-            pt1 = theVisMindVision.TheCapturedPoints.LastPoints1;
-            pt2 = theVisMindVision.TheCapturedPoints.LastPoints2;
-            pt3 = theVisMindVision.TheCapturedPoints.LastPoints3;
-            pt4 = theVisMindVision.TheCapturedPoints.LastPoints4;
+            pt1 = theVisMindVision.TheCapturedImagePoints.LastPoints1;
+            pt2 = theVisMindVision.TheCapturedImagePoints.LastPoints2;
+            pt3 = theVisMindVision.TheCapturedImagePoints.LastPoints3;
+            pt4 = theVisMindVision.TheCapturedImagePoints.LastPoints4;
         }
 
         private double[] ReconstructFromImagePoints(Point pt1, Point pt2, Point pt3, Point pt4)
@@ -477,7 +501,7 @@ namespace CameraCapture
 
         #endregion
 
-        #region 通信测试
+        #region 测试函数
         private void commTestButton_Click(object sender, EventArgs e)
         {
             this.timer1.Enabled = true;
@@ -509,7 +533,17 @@ namespace CameraCapture
                     }
                 }));
         } 
+
+        private void outputRobotPointsButton_Click(object sender, EventArgs e)
+        {
+            AppendToTextBox1(theVisRobot3.TheCapturedRoboticPoints.ToString());
+        }
+
         #endregion
+
+
+
+
 
         #region 若干UI函数
         public void UpdateControls()
@@ -558,6 +592,8 @@ namespace CameraCapture
 
         #endregion
 
+
+
     }
 
     // 视觉模块
@@ -594,10 +630,108 @@ namespace CameraCapture
 
     }
 
+    public class CapturedRoboticPoints
+    {
+        private List<DateTime> times = new List<DateTime>();
+        private List<XYZ> robotPoints = new List<XYZ>();
+        private List<string> frame0Names = new List<string>();
+        private List<string> frame1Names = new List<string>();
+        private List<string> frame2Names = new List<string>();
+        private List<string> frame3Names = new List<string>();
+
+        public List<DateTime> Times
+        {
+            get { return times; }
+            set { times = value; }
+        }
+
+        public DateTime LastTimes
+        {
+            get
+            {
+                if (times.Count == 0) return DateTime.Now;
+                return times[times.Count-1];
+            }
+        }
+
+        public List<XYZ> RobotPoints
+        {
+            get { return robotPoints; }
+            set { robotPoints = value; }
+        }
+
+        public int GetLastIndex()
+        {
+            return robotPoints.Count - 1;
+        }
+
+        public XYZ LastRobotPoints
+        {
+            get
+            {
+                if (robotPoints.Count == 0) return new XYZ(0,0,0);
+                return robotPoints[robotPoints.Count - 1];
+            }
+        }
+
+        public List<string> Frame0Names
+        {
+            get { return frame0Names; }
+            set { frame0Names = value; }
+        }
+
+        public List<string> Frame1Names
+        {
+            get { return frame1Names; }
+            set { frame1Names = value; }
+        }
+
+        public List<string> Frame2Names
+        {
+            get { return frame2Names; }
+            set { frame2Names = value; }
+        }
+
+        public List<string> Frame3Names
+        {
+            get { return frame3Names; }
+            set { frame3Names = value; }
+        }
+
+        public void Add(XYZ _xyz, DateTime _dt, string name1, string name2, string name3, string name4)
+        {
+            robotPoints.Add(_xyz);
+            times.Add(_dt);
+            frame0Names.Add(name1);
+            frame1Names.Add(name2);
+            frame2Names.Add(name3);
+            frame3Names.Add(name4);
+        }
+
+        public override string ToString()
+        {
+            string text = "";
+            for (int i = 0; i < robotPoints.Count; i++)
+            {
+                text = text + robotPoints[i].X + "|";
+                text = text + robotPoints[i].Y + "|";
+                text = text + robotPoints[i].Z + "|";
+                text = text + times[i].ToString("yyyy-MM-dd HH:mm:ss.fff") + "|";
+                text = text + frame0Names[i] + "|";
+                text = text + frame1Names[i] + "|";
+                text = text + frame2Names[i] + "|";
+                text = text + frame3Names[i] + "\r\n";
+            }
+
+            return text;
+        }
+    }
+
+
     /// <summary>
-    ///  采集到的点，包括时间及点
+    ///  采集到的图像点，包括时间及点
     /// </summary>
-    public class CapturedPoints
+    public class CapturedImagePoints
     {
         private List<DateTime> times1 = new List<DateTime>();
         private List<Point> points1 = new List<Point>();
@@ -731,6 +865,26 @@ namespace CameraCapture
 
     }
 
+    // 机器人系统
+    public class VisRobot3
+    {
+        // 当前采集的机器人数据点
+        CapturedRoboticPoints theCapturedRoboticPoints = new CapturedRoboticPoints();
+        // 父窗口
+        private CameraCapture3 frm = null;
+        public VisRobot3(CameraCapture3 _frm)
+        {
+            frm = _frm;
+        }
+
+        public CapturedRoboticPoints TheCapturedRoboticPoints
+        {
+            get { return theCapturedRoboticPoints; }
+            set { theCapturedRoboticPoints = value; }
+        }
+    }
+
+
     // MindVision视觉系统
     public class VisMindVision3
     {
@@ -779,7 +933,9 @@ namespace CameraCapture
         // 当前视觉系统的工作状态
         private VisVisionState visState = new VisVisionState(); 
         // 当前采集的数据点
-        CapturedPoints theCapturedPoints = new CapturedPoints();
+        CapturedImagePoints theCapturedImagePoints = new CapturedImagePoints();
+        // 一键截图各个相机的路径
+        string [] snapFramesPath = new string[CAMERA_NUM];
         #endregion
 
         // 父窗口
@@ -819,10 +975,16 @@ namespace CameraCapture
             set { visState = value; }
         }
 
-        public CapturedPoints TheCapturedPoints
+        public CapturedImagePoints TheCapturedImagePoints
         {
-            get { return theCapturedPoints; }
-            set { theCapturedPoints = value; }
+            get { return theCapturedImagePoints; }
+            set { theCapturedImagePoints = value; }
+        }
+
+        public string[] SnapFramesPath
+        {
+            get { return snapFramesPath; }
+            set { snapFramesPath = value; }
         }
 
         #endregion
@@ -968,10 +1130,10 @@ namespace CameraCapture
 
             // 获取坐标点
             Point pt = new Point((new Random()).Next(1, 512), (new Random()).Next(1, 512));
-            theCapturedPoints.Points1.Add(pt);
-            theCapturedPoints.Times1.Add(DateTime.Now);
+            theCapturedImagePoints.Points1.Add(pt);
+            theCapturedImagePoints.Times1.Add(DateTime.Now);
 
-            Debug.Print("Point1：{0:D4}-{1:D3}-{2:D3}.Time1：{3}", theCapturedPoints.Points1.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            Debug.Print("Point1：{0:D4}-{1:D3}-{2:D3}.Time1：{3}", theCapturedImagePoints.Points1.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
 
             // 更新图像
             //frm.ImageBox0.Image = (Image)frame[0].Bitmap;
@@ -993,74 +1155,16 @@ namespace CameraCapture
             }
         }
 
-        private int even = 0;
-        public void SetAllRoi(int x1,int y1, int x2, int y2, int index)
-        {
-            for (int i = 0; i < NumberOfAvailableCamera; i++)
-            {
-                // MvApi.CameraGrabber_SetRGBCallback(m_Grabber[i], null, IntPtr.Zero);
-
-
-                //SetRoi(x1, y1, x2, y2, 0xff, m_hCamera[i]);
-
-                switch (even)
-                {
-                    case 0:
-                        SetRoi(1, 1, 1000, 1000, 0xff, m_hCamera[i]);
-                        break;
-                    case 1:
-                        SetRoi(101, 101, 1000, 1000, 0xff, m_hCamera[i]);
-                        break;
-                    case 2:
-                        SetRoi(201, 201, 1000, 1000, 0xff, m_hCamera[i]);
-                        break;
-                    case 3:
-                        SetRoi(301, 301, 1000, 1000, 0xff, m_hCamera[i]);
-                        break;
-                    default:
-                        SetRoi(401, 401, 1000, 1000, 0xff, m_hCamera[i]);
-                        break;
-
-
-                }
-
-               
-                //SetRoi(x1,y1,x2,y2,0xff,m_hCamera[i]);
-
-                // MvApi.CameraGrabber_SetRGBCallback(m_Grabber[i], m_FrameCallback[i], IntPtr.Zero);
-            }
-
-            even = (even++ % 2);
-
-            //Thread.Sleep(10);
-        }
-
-        private void SetRoi(int x1,int y1, int x2, int y2, int index,int hcamera)
-        {
-            tSdkImageResolution resolution = new tSdkImageResolution();
-            resolution.iHeight = y2 - y1;
-            resolution.iHeightFOV = y2 - y1;
-            resolution.iVOffsetFOV = y1;
-
-            resolution.iHOffsetFOV = x1;
-            resolution.iWidth = x2 - x1;
-            resolution.iWidthFOV = x2 - x1;
-            
-            resolution.iIndex = index;
-
-            CameraSdkStatus status = MvApi.CameraSetImageResolution(hcamera, ref resolution);
-        }
-
         public void CameraGrabberFrameCallback1(IntPtr Grabber,IntPtr pFrameBuffer,ref tSdkFrameHead pFrameHead,IntPtr Context)
         {
             frame[1] = MvFrameBufferToCvMat(pFrameBuffer, ref pFrameHead);
 
             // 获取坐标点
             Point pt = new Point((new Random()).Next(1, 512), (new Random()).Next(1, 512));
-            theCapturedPoints.Points2.Add(pt);
-            theCapturedPoints.Times2.Add(DateTime.Now);
+            theCapturedImagePoints.Points2.Add(pt);
+            theCapturedImagePoints.Times2.Add(DateTime.Now);
 
-            Debug.Print("Point2：{0:D4}-{1:D3}-{2:D3}.Time2：{3}", theCapturedPoints.Points2.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            Debug.Print("Point2：{0:D4}-{1:D3}-{2:D3}.Time2：{3}", theCapturedImagePoints.Points2.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
 
             //SetRoi(500, 500, 1000, 1000, 0xff, m_hCamera[1]);
 
@@ -1076,10 +1180,10 @@ namespace CameraCapture
 
             // 获取坐标点
             Point pt = new Point((new Random()).Next(1, 512), (new Random()).Next(1, 512));
-            theCapturedPoints.Points3.Add(pt);
-            theCapturedPoints.Times3.Add(DateTime.Now);
+            theCapturedImagePoints.Points3.Add(pt);
+            theCapturedImagePoints.Times3.Add(DateTime.Now);
 
-            Debug.Print("Point3：{0:D4}-{1:D3}-{2:D3}.Time3：{3}", theCapturedPoints.Points3.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            Debug.Print("Point3：{0:D4}-{1:D3}-{2:D3}.Time3：{3}", theCapturedImagePoints.Points3.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
 
             //SetRoi(500, 500, 1500, 1500, 0xff, m_hCamera[2]);
 
@@ -1096,10 +1200,10 @@ namespace CameraCapture
 
             // 获取坐标点
             Point pt = new Point((new Random()).Next(1, 512), (new Random()).Next(1, 512));
-            theCapturedPoints.Points4.Add(pt);
-            theCapturedPoints.Times4.Add(DateTime.Now);
+            theCapturedImagePoints.Points4.Add(pt);
+            theCapturedImagePoints.Times4.Add(DateTime.Now);
 
-            Debug.Print("Point4：{0:D4}-{1:D3}-{2:D3}.Time4：{3}", theCapturedPoints.Points4.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            Debug.Print("Point4：{0:D4}-{1:D3}-{2:D3}.Time4：{3}", theCapturedImagePoints.Points4.Count, pt.X, pt.Y, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
 
 
             //SetRoi(500, 500, 1500, 1500, 0xff, m_hCamera[3]);
@@ -1130,16 +1234,28 @@ namespace CameraCapture
                 string filename = GenerateFileName(Grabber,".jpg");
                 MvApi.CameraImage_SaveAsJpeg(Image, filename, 90);
 
+                try{snapFramesPath[GetIndexOfGrabber(Grabber)] = filename;}catch (Exception){}
+                
                 saveAVIFilenames += filename + "\r\n";
                 countAVIFiles++;
             }
             if (countAVIFiles == CAMERA_NUM)
             {
-                MessageBox.Show(saveAVIFilenames);
+                //MessageBox.Show(saveAVIFilenames);
             }
 
 
             MvApi.CameraImage_Destroy(Image);
+        }
+
+        private int GetIndexOfGrabber(IntPtr Grabber)
+        {
+            if (Grabber == IntPtr.Zero) return -1;
+            if (Grabber == m_Grabber[0]) return 0;
+            if (Grabber == m_Grabber[1]) return 1;
+            if (Grabber == m_Grabber[2]) return 2;
+            if (Grabber == m_Grabber[3]) return 3;
+            return -1;
         }
 
         private string GenerateFileName(IntPtr Grabber,string subfix)
@@ -1229,6 +1345,9 @@ namespace CameraCapture
 
                 captureInProgress = !captureInProgress;
                 visState.SetState((int)VisVisionState.StateEnum.Capturing);
+                //if (captureInProgress) visState.SetState((int)VisVisionState.StateEnum.Capturing);
+                //else visState.SetState((int)VisVisionState.StateEnum.Capturing);
+                
             }
         }
 
@@ -1249,7 +1368,6 @@ namespace CameraCapture
                     MvApi.CameraGrabber_SaveImageAsync(m_Grabber[cameraIdx]);
             }
         }
-
 
         // 相机设置
         public void OnCameraSetting(int cameraIdx)
@@ -1942,6 +2060,9 @@ namespace CameraCapture
         protected double fpsOfFrame2 = 0;
         protected double fpsOfFrame3 = 0;
 
+        // 显示采集的机器人点数
+        protected uint numberPointsCapturedByRobot = 0;
+
         private CameraCapture3 frm;
 
         public CameraCapture3Monitor(CameraCapture3 _frm)
@@ -2149,26 +2270,34 @@ namespace CameraCapture
             set { numberImagesSnapedByFrame3 = value; }
         }
 
+        [Category("机器人端")]
+        [ReadOnly(true)]
+        public uint NumberPointsCapturedByRobot
+        {
+            get { return numberPointsCapturedByRobot; }
+            set { numberPointsCapturedByRobot = value; }
+        }
+
         #region 响应视觉端业务代码
 
         public override void OnStartClient()
         {
-            this.clientState = frm.TheVisMindVision.VisState.ToString();
+            this.clientState = frm.TheVisMindVision.VisState.GetStateString();
         }
 
         public override void OnPauseClient()
         {
-            this.clientState = frm.TheVisMindVision.VisState.ToString();
+            this.clientState = frm.TheVisMindVision.VisState.GetStateString();
         }
 
         public override void OnResumeClient()
         {
-            this.clientState = frm.TheVisMindVision.VisState.ToString();
+            this.clientState = frm.TheVisMindVision.VisState.GetStateString();
         }
 
         public override void OnFinishClient()
         {
-            this.clientState = frm.TheVisMindVision.VisState.ToString();
+            this.clientState = frm.TheVisMindVision.VisState.GetStateString();
         }
 
         public override void OnBroadCastMessage(string msg)
